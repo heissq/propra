@@ -3,54 +3,183 @@
 use strict;
 use Getopt::Long;
 
+my $dssp_folder = '/home/proj/biocluster/praktikum/bioprakt/Data/DSSP/';
+my $pdb_folder  = '/home/proj/biocluster/praktikum/bioprakt/Data/PDB/';
+
 my $pdb      = '';
 my $dssp     = '';
 my $dssp_bin = '';
 
-my $mode              = '';
-my $file_protein_list = '';
-my $dssp_file         = '';
+my $mode      = '';
+my $dssp_file = '';
+my $isdssp    = '';
 
 my @mandatory_options = ();
 my @file_protein_list = ();
+my $folder            = '';
+my @pdb_id_list       = ();
 
 GetOptions(
-    'pdb:s'      => \$pdb,
-    'dssp:s'     => \$dssp,
+   'pdb:s'      => \$pdb,
+'dssp:s'     => \$dssp,
     'dssp-bin:s' => \$dssp_bin,
-    't=s{3,}'   => \@mandatory_options
+ 't=s{3,3}'   => \@mandatory_options
 );
 
-
 $mode = $mandatory_options[0];
-for my $opts ( 1 .. $#mandatory_options-1) {
-  push(@file_protein_list,$mandatory_options[$opts]);
+
+# pdb_ids in datei einlesen
+open FILELIST, "<$mandatory_options[1]"
+   or die "angegebene Datei: $mandatory_options[1] nicht gefunden\.\n";
+while (<FILELIST>) {
+   my $tmp = $_;
+   $tmp =~ s/\n//;
+   push @pdb_id_list, $tmp;
 }
-$dssp_file = $mandatory_options[$#mandatory_options];
+close FILELIST;
+
+my $some_string = "string mit newline\n macht eine newline";
+
+$dssp_file = $mandatory_options[2];
 
 if ( $mode eq 'pdb' ) {
-  # do pdb mode
+
+   # do pdb mode
+   print "pdb mode\n";
 }
 
 if ( $mode eq 'dssp' ) {
-  # do dssp mode
+   # do dssp mode
+
+   # files suchen nach pdb ids
+   $isdssp = 1;
+   my $array_ref = getFiles($dssp_folder);
+   @file_protein_list = @{$array_ref};
+
+   # files einlesen
+   print "##########\nDSSP-Modus:\n##########\n\n\n";
+   foreach (@file_protein_list) {
+      my $reference    = '';
+      my $source       = '';
+      my $aa_sequence  = ();
+      my $sec_sequence = ();
+      my $istable      = 0;
+      my $pdbid        = '';
+
+      open FILE, "<$_" or die $!;
+
+      #do processing
+      while ( my $line = <FILE> ) {
+
+         #Referenz:
+         if ( $line =~ m/^REFERENCE (.*).$/ ) {
+            $reference .= $1;
+         }
+
+         #Source:
+         if ( $line =~ m/^SOURCE    (.*).$/ ) {
+            $source .= $1;
+         }
+
+         #Header:
+         if ( $line =~ m/^HEADER    .*(\w{3,4})\s+.$/ ) {
+            $pdbid .= $1;
+         }
+
+         #erkennung der tabelle:
+         if ( $line =~ m/^\s+#\s+RESIDUE/ ) {
+            $istable = 1;
+         }
+
+         #hinzufügen von aa_sequenz und sec_sequenz:
+         if ( $istable && $line =~ m/^.{13}([A-Z])..([A-Z| ])/ ) {
+            my $tmp_sec = '';
+
+            if ( $2 eq 'E' || $2 eq 'B' ) {
+               $tmp_sec = 'E';
+            }
+
+            elsif ( $2 eq 'G' || $2 eq 'H' ) {
+               $tmp_sec = 'H';
+            }
+            else {
+               $tmp_sec = 'C';
+            }
+            $aa_sequence  .= $1;
+            $sec_sequence .= $tmp_sec;
+         }
+      }
+
+      close FILE;
+      print "Referenz:\n$reference\n";
+      print "PDB-Id:\n$pdbid\n";
+      print
+      "Quelle:\n$source\n\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\n";
+      print "  $aa_sequence\n";
+      print "  $sec_sequence\n";
+   }
 }
 
 if ( $mode eq 'cmp' ) {
-  # do cmp mode
+
+   # do cmp mode
+   print "pdb cmp\n";
 }
 
-if ($pdb ne '') {
-  print "pdb enthalten";
+if ( $pdb ne '' ) {
+   print "pdb enthalten";
 }
 
-if ($dssp ne '') {
+if ( $dssp ne '' ) {
    print "dssp enthalten";
 }
 
-if ($dssp_bin ne '') {
+if ( $dssp_bin ne '' ) {
    print "dssp-bin enthalten";
 }
+
+# suchen der dateien
+sub getFiles {
+   my @file_list = ();
+   opendir( DIR, "$_[0]" ) or die "$folder\/\n";
+   while ( my $f = readdir(DIR) ) {    # dssp- oder pdb-ordner
+      print "$f\+";
+      if ( $f !~ m/^\./ && -d "$folder\/$f\/" ) {
+         # werden versteckte (.dateiname) dateien nicht aufgerufen
+         opendir( SUBDIR, "$_[0]\/$f\/" )
+            or die "ordner nicht vorhanden unterordner:$f\n";
+         while ( my $sf = readdir(SUBDIR) ) {    # unterodnern
+            print "$_[0]\/$f";
+            if ($isdssp) {
+
+               # dssp mode
+               for (@file_list) {
+                  if ( $sf =~ m/^(.{3,5}).*\.dssp$/ ) {
+                     if ( $1 eq $_ ) {
+                        push @file_list,$sf;
+                     }
+                  }
+               }
+            }
+            else {
+               # pdb mode
+               for (@file_list) {
+                  if ( $sf =~ m/^pdb(.{3,5}).*\.ent$/ ) {
+                     if ( $1 eq $_ ) {
+                        push @file_list,$sf;
+                     }
+                  }
+               }
+
+            }
+         }
+         closedir(SUBDIR);
+      }
+   }
+   closedir(DIR);
+   return \@file_list;
+}
+
 
 =begin GHOSTCODE
 opendir(DIR,$opts{d}) or die ": ordner nicht gefunden $opts{n}\n";
