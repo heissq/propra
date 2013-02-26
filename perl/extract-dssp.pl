@@ -12,18 +12,21 @@ my $file_protein_list = '';
 my $dssp_file         = '';
 
 my @mandatory_options = ();
+my @file_protein_list = ();
 
 GetOptions(
     'pdb:s'      => \$pdb,
     'dssp:s'     => \$dssp,
     'dssp-bin:s' => \$dssp_bin,
-    't=s{3,3}'   => \@mandatory_options
+    't=s{3,}'   => \@mandatory_options
 );
 
 
 $mode = $mandatory_options[0];
-$file_protein_list = $mandatory_options[1];
-$dssp_file = $mandatory_options[2];
+for my $opts ( 1 .. $#mandatory_options-1) {
+  push(@file_protein_list,$mandatory_options[$opts]);
+}
+$dssp_file = $mandatory_options[$#mandatory_options];
 
 if ( $mode eq 'pdb' ) {
   # do pdb mode
