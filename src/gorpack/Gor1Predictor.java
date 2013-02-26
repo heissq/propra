@@ -9,7 +9,7 @@ public class Gor1Predictor {
 	}
 	
 	public int[][][] model = g.getmodel();
-	public int[][][] matrix = g.getmatrix();
+	//public int[][][] matrix = g.getmatrix();
 	
 	public int[] pred;
 	public int[] protseq;
