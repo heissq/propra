@@ -1,16 +1,18 @@
 package gorpack;
 
+import java.io.FileNotFoundException;
+
 public class Gor1Model implements GorModel {
 // C -> 0 E -> 1 H -> 2
 	// Model -> (0...oo)
 	// Matrix -> loged
 	final static int nstates = 3;
-	final static int naa = 20;
+	final static int naa = 21;
 	final static int windowsize = 17;
 	int whalf = (int) Math.floor(windowsize/2.0);
 	int[][][] model = new int[nstates][naa][windowsize];
 	//Windowsize flexibel
-	int[][][] matrix = new int[nstates][naa][windowsize];
+	double[][][] matrix = new double[nstates][naa][windowsize];
 	int[] numss = {1,1,1};
 	public String readfile(String filename) {
 		// TODO Auto-generated method stub
@@ -19,7 +21,7 @@ public class Gor1Model implements GorModel {
 	
 	public Gor1Model(){
 		this.model = new int[nstates][naa][windowsize];
-		this.matrix = new int[nstates][naa][windowsize];
+		this.matrix = new double[nstates][naa][windowsize];
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
@@ -30,11 +32,11 @@ public class Gor1Model implements GorModel {
 	}
 //works
 	// Fills matrix according to training results
-	public void makematrix(int[][][] foo){
+	public void makematrix(int[][][] mod){
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					matrix[i][j][k] = (int) (Math.log(model[i][j][k]/(model[0][j][k] + model[1][j][k] + model[2][j][k] - model[i][j][k])) + Math.log(numss[i]/(numss[0]+numss[1]+numss[2]-numss[i])));
+					matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  Math.log((numss[0]+numss[1]+numss[2]-numss[i])/(double)numss[i]);
 				}
 			}
 		}
@@ -45,25 +47,37 @@ public class Gor1Model implements GorModel {
 		// TODO Auto-generated method stub
 		int[] ss = Useful.sstoint(sek);
 		int[] ps = Useful.aatoint(prim);
-		for(int i = whalf; i < prim.length()-9; i++){
+		for(int i = whalf; i < prim.length()-whalf; i++){
 			for(int j = 0; j < windowsize; j++){
 				model[ss[i]][ps[i+j-8]][j]++;
 				numss[ss[i]]++;
 			}
 		}
-		this.makematrix(model);
 		numss[0] += Useful.countss(sek)[0];
 		numss[1] += Useful.countss(sek)[1];
 		numss[2] += Useful.countss(sek)[2];
+		makematrix(this.model);
 	}
 	//Trains Gor1 Model based on file path
 	public void train(String path){
+		try {
+			Sequence[] data = Useful.filetosequence(path);
+			for(int i = 0; i < data.length; i++){
+				this.train(data[i].getps(), data[i].getss());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(numss[0]);
+		System.out.println(numss[1]);
+		System.out.println(numss[2]);
 		
 	}
 	
 	//Calculates most likely Secondary Structure
-	public int[] prob(int[] ps, int pos){
-		int[] p = new int[4];
+	public double[] prob(int[] ps, int pos){
+		double[] p = new double[4];
 		for(int i = 0; i < windowsize; i++){
 			p[0] += matrix[0][ps[pos+i-whalf]][i];
 			p[1] += matrix[1][ps[pos+i-whalf]][i];
@@ -72,19 +86,31 @@ public class Gor1Model implements GorModel {
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
 		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
-		else p[3] = 3;
-		p[0] = p[0]*100/(p[0]+p[1]+p[2]);
-		p[1] = p[1]*100/(p[0]+p[1]+p[2]);
-		p[2] = p[2]*100/(p[0]+p[1]+p[2]);
+		else p[3] = 1;
 		return p;
 	}
 	
 	public int[] predict(int[] ps){
 		int[] r = new int[ps.length];
 		for(int i = 8; i < ps.length-8; i++){
-			r[i] = prob(ps, i)[3];
+			double[] p = prob(ps, i);
+			r[i] = (int) p[3];
+			//System.out.println("foobar");
 		}
+		
 		return r;
+	}
+	
+	public String predictString(int[] ps){
+		int[] num = predict(ps);
+		return Useful.makess(num);
+	}
+	
+	public String predictString(String ps){
+		int[] foo = Useful.aatoint(ps);
+		int[] num = predict(foo);
+		//System.out.println(num[1]);
+		return Useful.makess(num);
 	}
 	
 	@Override
@@ -96,7 +122,7 @@ public class Gor1Model implements GorModel {
 		return this.model;
 	}
 	
-	public int[][][] getmatrix(){
+	public double[][][] getmatrix(){
 		return this.matrix;
 	}
 	
