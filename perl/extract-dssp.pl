@@ -2,23 +2,39 @@
 
 use strict;
 use Getopt::Long;
-use Getopt::Mixed;
 
-
-
-
-my %opts;
-
-my $pdb = '';
-my $dssp = '';
+my $pdb      = '';
+my $dssp     = '';
 my $dssp_bin = '';
 
-my $t = '';
+my $mode              = '';
+my $file_protein_list = '';
+my $dssp_file         = '';
 
-GetOptions ('tag:pdb' => \$pdb);
-GetOptions ('tag:dssp' => \$dssp;
-GetOptions ('tag:dssp-bin' => \$dssp_bin);
+my @mandatory_options = ();
 
+GetOptions(
+    'pdb:s'      => \$pdb,
+    'dssp:s'     => \$dssp,
+    'dssp-bin:s' => \$dssp_bin,
+    't=s{3,3}'   => \@mandatory_options
+);
+
+print "split(', ',@mandatory_options\n";
+
+if ($pdb ne '') {
+  print "pdb enthalten";
+}
+
+if ($dssp ne '') {
+   print "dssp enthalten";
+}
+
+if ($dssp_bin ne '') {
+   print "dssp-bin enthalten";
+}
+
+=begin GHOSTCODE
 opendir(DIR,$opts{d}) or die ": ordner nicht gefunden $opts{n}\n";
 
 
@@ -80,8 +96,8 @@ while (my $f = readdir(DIR)) { # homstrad ordner
             }
           $lastlinecount = 1;
           }
-        
-        
+
+
 
         # sequenz extract
         if ( $_ =~ m/^([A-Z0-9\-]+)\*?/ && $lastlinecount == 2 )
@@ -161,3 +177,6 @@ while (my $f = readdir(DIR)) { # homstrad ordner
 }
 closedir(DIR);
 $dbh->disconnect();
+end=GHOSTCODE
+
+=cut
