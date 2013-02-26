@@ -50,7 +50,7 @@ public class Useful {
 		if(i == 0) return "C";
 		else if(i == 1) return "E";
 		else if(i == 2) return "H";
-		else return " ";
+		else return "-";
 	}
 	
 	//Amino Acid String to Integer Array
@@ -127,10 +127,12 @@ public class Useful {
 	
 	public static String makess(int[] ss){
 		String sek = "";
+		String k = "";
 		for(int i = 0; i<ss.length; i++){
-			sek.concat(sschar(ss[i]));
+			k = k+sschar(ss[i]);
+			//System.out.println(k);
 		}
-		return sek;
+		return k;
 	}
 
 }

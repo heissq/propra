@@ -5,7 +5,7 @@ public class Gor1Model implements GorModel {
 	// Model -> (0...oo)
 	// Matrix -> loged
 	final static int nstates = 3;
-	final static int naa = 20;
+	final static int naa = 21;
 	final static int windowsize = 17;
 	int whalf = (int) Math.floor(windowsize/2.0);
 	int[][][] model = new int[nstates][naa][windowsize];
@@ -30,11 +30,11 @@ public class Gor1Model implements GorModel {
 	}
 //works
 	// Fills matrix according to training results
-	public void makematrix(int[][][] foo){
+	public void makematrix(int[][][] mod){
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					matrix[i][j][k] = (int) (Math.log(model[i][j][k]/(model[0][j][k] + model[1][j][k] + model[2][j][k] - model[i][j][k])) + Math.log(numss[i]/(numss[0]+numss[1]+numss[2]-numss[i])));
+					matrix[i][j][k] = (int) (Math.log(mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k]))) + (int) (Math.log(numss[i]/(numss[0]+numss[1]+numss[2]-numss[i])));
 				}
 			}
 		}
@@ -45,13 +45,13 @@ public class Gor1Model implements GorModel {
 		// TODO Auto-generated method stub
 		int[] ss = Useful.sstoint(sek);
 		int[] ps = Useful.aatoint(prim);
-		for(int i = whalf; i < prim.length()-9; i++){
+		for(int i = whalf; i < prim.length()-whalf; i++){
 			for(int j = 0; j < windowsize; j++){
 				model[ss[i]][ps[i+j-8]][j]++;
 				numss[ss[i]]++;
 			}
 		}
-		this.makematrix(model);
+		makematrix(this.model);
 		numss[0] += Useful.countss(sek)[0];
 		numss[1] += Useful.countss(sek)[1];
 		numss[2] += Useful.countss(sek)[2];
@@ -72,19 +72,31 @@ public class Gor1Model implements GorModel {
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
 		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
-		else p[3] = 3;
-		p[0] = p[0]*100/(p[0]+p[1]+p[2]);
-		p[1] = p[1]*100/(p[0]+p[1]+p[2]);
-		p[2] = p[2]*100/(p[0]+p[1]+p[2]);
+		else p[3] = 1;
 		return p;
 	}
 	
 	public int[] predict(int[] ps){
 		int[] r = new int[ps.length];
 		for(int i = 8; i < ps.length-8; i++){
-			r[i] = prob(ps, i)[3];
+			int[] p = prob(ps, i);
+			r[i] = p[3];
+			System.out.println("foobar");
 		}
+		
 		return r;
+	}
+	
+	public String predictString(int[] ps){
+		int[] num = predict(ps);
+		return Useful.makess(num);
+	}
+	
+	public String predictString(String ps){
+		int[] foo = Useful.aatoint(ps);
+		int[] num = predict(foo);
+		System.out.println(num[1]);
+		return Useful.makess(num);
 	}
 	
 	@Override
