@@ -4,7 +4,8 @@ import java.io.*;
 
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
-	
+	public final int aa = 21;
+	public final int windowsize = 17;
 	public static int[] countss(String ss){
 		int[] r = {0,0,0};
 		for(int i = 0; i<ss.length(); i++){
@@ -133,6 +134,38 @@ public class Useful {
 			//System.out.println(k);
 		}
 		return k;
+	}
+	
+	public int[][][] readmatrix(String path){
+		int[][][] out = new int[3][21][17];
+		try{
+			FileReader input = new FileReader(path);
+			BufferedReader br = new BufferedReader(input);
+			String line;
+			int ct = 0;
+			line = br.readLine();
+			if(line.startsWith("Cter")){ 
+				ct++;
+			}
+			while((line = br.readLine()) != null){
+				if(line.startsWith(">")) ct++;
+				else {
+					String[] s = line.split("\t");
+					char c = s[0].charAt(0);
+					for(int i = 0; i < windowsize; i++){
+					out[0][aaint(c)][i] = Integer.parseInt(s[i+1]);
+					}
+					ct++;
+				} 
+			}
+			br.close();
+			} catch(FileNotFoundException e){
+				//System.out.println("Hallo");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return out;
 	}
 
 }
