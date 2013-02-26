@@ -3,6 +3,8 @@ package gorpack;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import org.apache.commons.cli.*;
+
 public class Train {
 
 	/**
@@ -10,6 +12,8 @@ public class Train {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
+		Options opt = new Options();
+		CommandLineParser parser = new GnuParser();
 		String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 		String filename = "";
 		// TODO Auto-generated method stub
@@ -27,12 +31,6 @@ public class Train {
 			}
 			out.println();
 		}
-		
-		
-		//int[] bar = {3,3,8,16,8,2,5,7,1,0,3,1,1,2,2,3,4,4,4,4};
-		//int[] foobar = g.predict(bar);
-		//System.out.println(foobar[1]);
-		//System.out.println(g.matrix[0][0][0]);
 	}
 
 }
