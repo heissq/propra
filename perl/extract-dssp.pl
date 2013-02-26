@@ -12,7 +12,6 @@ my $dssp_bin = '';
 
 my $mode      = '';
 my $dssp_file = '';
-my $isdssp    = '';
 
 my @mandatory_options = ();
 my @file_protein_list = ();
@@ -38,8 +37,6 @@ while (<FILELIST>) {
 }
 close FILELIST;
 
-my $some_string = "string mit newline\n macht eine newline";
-
 $dssp_file = $mandatory_options[2];
 
 if ( $mode eq 'pdb' ) {
@@ -52,7 +49,6 @@ if ( $mode eq 'dssp' ) {
    # do dssp mode
 
    # files suchen nach pdb ids
-   $isdssp = 1;
    my $array_ref = getFiles($dssp_folder);
    @file_protein_list = @{$array_ref};
 
@@ -141,16 +137,15 @@ if ( $dssp_bin ne '' ) {
 # suchen der dateien
 sub getFiles {
    my @file_list = ();
-   opendir( DIR, "$_[0]" ) or die "$folder\/\n";
+
+   opendir( DIR, "$_[0]" ) or die "$_[0]\/\n";
    while ( my $f = readdir(DIR) ) {    # dssp- oder pdb-ordner
-      print "$f\+";
-      if ( $f !~ m/^\./ && -d "$folder\/$f\/" ) {
+      if ( $f !~ m/^\./ && -d "$_[0]\/$f\/" ) {
          # werden versteckte (.dateiname) dateien nicht aufgerufen
          opendir( SUBDIR, "$_[0]\/$f\/" )
             or die "ordner nicht vorhanden unterordner:$f\n";
          while ( my $sf = readdir(SUBDIR) ) {    # unterodnern
-            print "$_[0]\/$f";
-            if ($isdssp) {
+            if ($_[0] =~ m/DSSP/ ) {
 
                # dssp mode
                for (@file_list) {
