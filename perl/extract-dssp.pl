@@ -20,7 +20,22 @@ GetOptions(
     't=s{3,3}'   => \@mandatory_options
 );
 
-print "split(', ',@mandatory_options\n";
+
+$mode = $mandatory_options[0];
+$file_protein_list = $mandatory_options[1];
+$dssp_file = $mandatory_options[2];
+
+if ( $mode eq 'pdb' ) {
+  # do pdb mode
+}
+
+if ( $mode eq 'dssp' ) {
+  # do dssp mode
+}
+
+if ( $mode eq 'cmp' ) {
+  # do cmp mode
+}
 
 if ($pdb ne '') {
   print "pdb enthalten";
