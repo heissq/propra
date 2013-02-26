@@ -1,5 +1,7 @@
 package gorpack;
 
+import java.io.*;
+
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
 	
@@ -19,9 +21,8 @@ public class Useful {
 	public static int aaint(char aa){
 		if(aminoacids.indexOf(aa) >= 0){
 			return aminoacids.indexOf(aa);
-		}
-		else{
-		throw new IllegalArgumentException("Not a legal Protein sequence");
+		}else{
+			return 20;
 		}
 	}
 	
@@ -33,7 +34,7 @@ public class Useful {
 			throw new IllegalArgumentException("Not a legal value");
 		}
 	}
-	
+	// Secondary Structure -> Integer
 	public static int[] sstoint(String aa){
 		int[] ret = new int[aa.length()];
 		for(int i = 0; i < aa.length(); i++){
@@ -43,7 +44,7 @@ public class Useful {
 		}
 		return ret;
 	}
-	
+	//Amino Acid String to Integer Array
 	public static int[] aatoint(String aa){
 		int[] ret = new int[aa.length()];
 		for(int i = 0; i< aa.length(); i++){
@@ -51,9 +52,30 @@ public class Useful {
 		}
 		return ret;
 	}
-	
-	public static String filetostring(String path){
-		
+	//Reads file and turns it into String Array; first one: ID second one: Primary Structure third one: Secondary Structure
+	public static String[][] filetostring(String path) throws FileNotFoundException{
+		String[][] out = null;
+		try{
+		FileReader input = new FileReader(path);
+		BufferedReader br = new BufferedReader(input);
+		String foo;
+		String[] bar;
+		int ct = 0;
+		foo = br.readLine();
+		while(foo != null){
+			foo = br.readLine();
+			if(foo.startsWith(">")) out[0][ct] = foo;
+			else if(foo.startsWith("AS")) out[1][ct] = foo;
+			else if(foo.startsWith("SS")) out[2][ct] = foo;
+			ct++;
+		}
+		br.close();
+		} catch(FileNotFoundException e){
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return out;
 	}
 
 }
