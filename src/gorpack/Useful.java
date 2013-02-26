@@ -117,7 +117,7 @@ public class Useful {
 		}
 		br.close();
 		} catch(FileNotFoundException e){
-			System.out.println("Hallo");
+			//System.out.println("Hallo");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

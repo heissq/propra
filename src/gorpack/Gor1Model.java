@@ -1,5 +1,7 @@
 package gorpack;
 
+import java.io.FileNotFoundException;
+
 public class Gor1Model implements GorModel {
 // C -> 0 E -> 1 H -> 2
 	// Model -> (0...oo)
@@ -34,7 +36,7 @@ public class Gor1Model implements GorModel {
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					matrix[i][j][k] = (int) (Math.log(mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k]))) + (int) (Math.log(numss[i]/(numss[0]+numss[1]+numss[2]-numss[i])));
+					matrix[i][j][k] = (int) (Math.log(mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k]))) + (int) (Math.log((numss[0]+numss[1]+numss[2]-numss[i])/numss[i]));
 				}
 			}
 		}
@@ -58,6 +60,15 @@ public class Gor1Model implements GorModel {
 	}
 	//Trains Gor1 Model based on file path
 	public void train(String path){
+		try {
+			Sequence[] data = Useful.filetosequence(path);
+			for(int i = 0; i < data.length; i++){
+				this.train(data[i].getps(), data[i].getss());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -81,7 +92,7 @@ public class Gor1Model implements GorModel {
 		for(int i = 8; i < ps.length-8; i++){
 			int[] p = prob(ps, i);
 			r[i] = p[3];
-			System.out.println("foobar");
+			//System.out.println("foobar");
 		}
 		
 		return r;
@@ -95,7 +106,7 @@ public class Gor1Model implements GorModel {
 	public String predictString(String ps){
 		int[] foo = Useful.aatoint(ps);
 		int[] num = predict(foo);
-		System.out.println(num[1]);
+		//System.out.println(num[1]);
 		return Useful.makess(num);
 	}
 	
