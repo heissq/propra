@@ -1,0 +1,8 @@
+# bin classes von java
+*.class
+*.jar
+
+# zip etc,
+*.zip
+*.*~
+*.gz
