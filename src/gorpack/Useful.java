@@ -1,5 +1,7 @@
 package gorpack;
 
+import java.io.*;
+
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
 	
@@ -19,9 +21,8 @@ public class Useful {
 	public static int aaint(char aa){
 		if(aminoacids.indexOf(aa) >= 0){
 			return aminoacids.indexOf(aa);
-		}
-		else{
-		throw new IllegalArgumentException("Not a legal Protein sequence");
+		}else{
+			return 20;
 		}
 	}
 	
@@ -33,7 +34,7 @@ public class Useful {
 			throw new IllegalArgumentException("Not a legal value");
 		}
 	}
-	
+	// Secondary Structure -> Integer
 	public static int[] sstoint(String aa){
 		int[] ret = new int[aa.length()];
 		for(int i = 0; i < aa.length(); i++){
@@ -43,7 +44,7 @@ public class Useful {
 		}
 		return ret;
 	}
-	
+	//Amino Acid String to Integer Array
 	public static int[] aatoint(String aa){
 		int[] ret = new int[aa.length()];
 		for(int i = 0; i< aa.length(); i++){
@@ -51,9 +52,66 @@ public class Useful {
 		}
 		return ret;
 	}
-	
-	public static String filetostring(String path){
-		
+	//Reads file and turns it into String Array; first one: ID second one: Primary Structure third one: Secondary Structure
+	public static String[][] filetostring(String path) throws FileNotFoundException{
+		String[][] out = null;
+		try{
+		FileReader input = new FileReader(path);
+		BufferedReader br = new BufferedReader(input);
+		String foo;
+		String[] bar;
+		int ct = 0;
+		foo = br.readLine();
+		while(foo != null){
+			foo = br.readLine();
+			if(foo.startsWith(">")) out[0][ct] = foo;
+			else if(foo.startsWith("AS")) out[1][ct] = foo;
+			else if(foo.startsWith("SS")) out[2][ct] = foo;
+			ct++;
+		}
+		br.close();
+		} catch(FileNotFoundException e){
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return out;
+	}
+	//works as of 26-02 15:17
+	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
+		Sequence[] out = new Sequence[10000];
+		for(int i = 0; i<10000; i++){
+			out[i] = new Sequence();
+		}
+		try{
+		FileReader input = new FileReader(path);
+		BufferedReader br = new BufferedReader(input);
+		String line;
+		int ct = 0;
+		line = br.readLine();
+		if(line.startsWith(">")){ 
+			out[0].setid(line);
+		}
+		while((line = br.readLine()) != null){
+			if(line.startsWith(">")) {
+				String foo = line.substring(2);
+				out[ct].setid(foo);}
+			else if(line.startsWith("AS")) {
+				String foo = line.substring(3);
+				out[ct].setps(foo);}
+			else if(line.startsWith("SS")) {
+				String foo = line.substring(3);
+				out[ct].setss(foo);}
+			else ct++;
+		}
+		br.close();
+		} catch(FileNotFoundException e){
+			System.out.println("Hallo");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return out;
 	}
 
 }
