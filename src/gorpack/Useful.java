@@ -77,7 +77,7 @@ public class Useful {
 		}
 		return out;
 	}
-	
+	//works as of 26-02 15:17
 	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
 		Sequence[] out = new Sequence[10000];
 		for(int i = 0; i<10000; i++){
@@ -86,16 +86,22 @@ public class Useful {
 		try{
 		FileReader input = new FileReader(path);
 		BufferedReader br = new BufferedReader(input);
-		String foo;
+		String line;
 		int ct = 0;
-		foo = br.readLine();
-		if(foo.startsWith(">")){ 
-			out[0].setid(foo);
+		line = br.readLine();
+		if(line.startsWith(">")){ 
+			out[0].setid(line);
 		}
-		while((foo = br.readLine()) != null){
-			if(foo.startsWith(">")) out[ct].setid(foo);
-			else if(foo.startsWith("AS")) out[ct].setps(foo);
-			else if(foo.startsWith("SS")) out[ct].setss(foo);
+		while((line = br.readLine()) != null){
+			if(line.startsWith(">")) {
+				String foo = line.substring(2);
+				out[ct].setid(foo);}
+			else if(line.startsWith("AS")) {
+				String foo = line.substring(3);
+				out[ct].setps(foo);}
+			else if(line.startsWith("SS")) {
+				String foo = line.substring(3);
+				out[ct].setss(foo);}
 			else ct++;
 		}
 		br.close();

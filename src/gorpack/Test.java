@@ -20,6 +20,6 @@ public static void main(String[] Args) throws FileNotFoundException{
 	System.out.println(foobar[1]);
 	//System.out.println(g.matrix[0][0][0]);
 	Sequence[] bla = Useful.filetosequence("/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db");
-	System.out.println(bla[0].getid());
+	System.out.println(bla[0].getss());
 }
 }
