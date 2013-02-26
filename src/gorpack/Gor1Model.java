@@ -62,23 +62,27 @@ public class Gor1Model implements GorModel {
 	}
 	
 	//Calculates most likely Secondary Structure
-	public int prob(int[] ps, int pos){
-		int[] p = new int[3];
+	public int[] prob(int[] ps, int pos){
+		int[] p = new int[4];
 		for(int i = 0; i < windowsize; i++){
 			p[0] += matrix[0][ps[pos+i-whalf]][i];
 			p[1] += matrix[1][ps[pos+i-whalf]][i];
 			p[2] += matrix[2][ps[pos+i-whalf]][i];
 		}
-		if(p[0] > p[1] && p[0] > p[2]) return 0;
-		else if(p[1] > p[0] && p[1] > p[2]) return 1;
-		else if(p[2] > p[0] && p[2] > p[1]) return 2;
-		else return 3;
+		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
+		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
+		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
+		else p[3] = 3;
+		p[0] = p[0]*100/(p[0]+p[1]+p[2]);
+		p[1] = p[1]*100/(p[0]+p[1]+p[2]);
+		p[2] = p[2]*100/(p[0]+p[1]+p[2]);
+		return p;
 	}
 	
 	public int[] predict(int[] ps){
 		int[] r = new int[ps.length];
 		for(int i = 8; i < ps.length-8; i++){
-			r[i] = prob(ps, i);
+			r[i] = prob(ps, i)[3];
 		}
 		return r;
 	}

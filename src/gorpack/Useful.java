@@ -34,6 +34,7 @@ public class Useful {
 			throw new IllegalArgumentException("Not a legal value");
 		}
 	}
+	
 	// Secondary Structure -> Integer
 	public static int[] sstoint(String aa){
 		int[] ret = new int[aa.length()];
@@ -44,6 +45,14 @@ public class Useful {
 		}
 		return ret;
 	}
+	
+	public static String sschar(int i){
+		if(i == 0) return "C";
+		else if(i == 1) return "E";
+		else if(i == 2) return "H";
+		else return " ";
+	}
+	
 	//Amino Acid String to Integer Array
 	public static int[] aatoint(String aa){
 		int[] ret = new int[aa.length()];
@@ -52,6 +61,7 @@ public class Useful {
 		}
 		return ret;
 	}
+	
 	//Reads file and turns it into String Array; first one: ID second one: Primary Structure third one: Secondary Structure
 	public static String[][] filetostring(String path) throws FileNotFoundException{
 		String[][] out = null;
@@ -77,6 +87,7 @@ public class Useful {
 		}
 		return out;
 	}
+	
 	//works as of 26-02 15:17
 	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
 		Sequence[] out = new Sequence[10000];
@@ -112,6 +123,14 @@ public class Useful {
 			e.printStackTrace();
 		}
 		return out;
+	}
+	
+	public static String makess(int[] ss){
+		String sek = "";
+		for(int i = 0; i<ss.length; i++){
+			sek.concat(sschar(ss[i]));
+		}
+		return sek;
 	}
 
 }
