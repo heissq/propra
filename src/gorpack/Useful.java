@@ -77,5 +77,35 @@ public class Useful {
 		}
 		return out;
 	}
+	
+	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
+		Sequence[] out = new Sequence[10000];
+		for(int i = 0; i<10000; i++){
+			out[i] = new Sequence();
+		}
+		try{
+		FileReader input = new FileReader(path);
+		BufferedReader br = new BufferedReader(input);
+		String foo;
+		int ct = 0;
+		foo = br.readLine();
+		if(foo.startsWith(">")){ 
+			out[0].setid(foo);
+		}
+		while((foo = br.readLine()) != null){
+			if(foo.startsWith(">")) out[ct].setid(foo);
+			else if(foo.startsWith("AS")) out[ct].setps(foo);
+			else if(foo.startsWith("SS")) out[ct].setss(foo);
+			else ct++;
+		}
+		br.close();
+		} catch(FileNotFoundException e){
+			System.out.println("Hallo");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return out;
+	}
 
 }

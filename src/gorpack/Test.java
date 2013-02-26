@@ -1,7 +1,9 @@
 package gorpack;
 
+import java.io.FileNotFoundException;
+
 public class Test {
-public static void main(String[] Args){
+public static void main(String[] Args) throws FileNotFoundException{
 	Gor1Model g = new Gor1Model();
 	int foo =  Useful.aaint('A');
 	System.out.println(foo);
@@ -17,5 +19,7 @@ public static void main(String[] Args){
 	int[] foobar = g.predict(bar);
 	System.out.println(foobar[1]);
 	//System.out.println(g.matrix[0][0][0]);
+	Sequence[] bla = Useful.filetosequence("/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db");
+	System.out.println(bla[0].getid());
 }
 }

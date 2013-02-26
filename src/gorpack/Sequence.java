@@ -12,9 +12,9 @@ public Sequence(String id, String ps, String ss){
 }
 
 public Sequence(){
-	this.id = null;
-	this.ps = null;
-	this.ss = null;
+	this.id = "foo";
+	this.ps = "foo";
+	this.ss = "foo";
 }
 
 public String getps(){
