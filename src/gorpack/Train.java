@@ -15,10 +15,22 @@ public class Train {
 	/**
 	 * @param args
 	 * @throws IOException 
+	 * @throws ParseException 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 		Options opt = new Options();
+		opt.addOption("", "db", true, "The File used for Training");
+		opt.addOption("", "method", true, "The method used for Training");
+		opt.addOption("", "model", true, "The model file to be created");
 		CommandLineParser parser = new GnuParser();
+		CommandLine cmd = parser.parse(opt, args);
+		if(cmd.hasOption("db")){
+			String p = cmd.getOptionValue("db");
+		}
+		if(cmd.hasOption("method")){}
+		if(cmd.hasOption("model")){
+			String filename = cmd.getOptionValue("model");
+		}
 		String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 		String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
 		// TODO Auto-generated method stub
