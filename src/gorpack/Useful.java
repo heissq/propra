@@ -91,7 +91,7 @@ public class Useful {
 	}
 	
 	//works as of 26-02 15:17
-	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
+	public static Sequence[] filetosequence(String path, int tr) throws FileNotFoundException{
 		Sequence[] out = new Sequence[10000];
 		for(int i = 0; i<10000; i++){
 			out[i] = new Sequence();
@@ -107,7 +107,7 @@ public class Useful {
 		}
 		while((line = br.readLine()) != null){
 			if(line.startsWith(">")) {
-				String foo = line.substring(2);
+				String foo = line.substring(tr);
 				out[ct].setid(foo);}
 			else if(line.startsWith("AS")) {
 				String foo = line.substring(3);
@@ -125,6 +125,10 @@ public class Useful {
 			e.printStackTrace();
 		}
 		return out;
+	}
+	
+	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
+		return filetosequence(path, 2);
 	}
 	
 	public static String makess(int[] ss){

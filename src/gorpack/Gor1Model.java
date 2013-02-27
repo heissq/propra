@@ -100,7 +100,7 @@ public class Gor1Model implements GorModel {
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
 		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
-		else p[3] = 1;
+		else p[3] = 3;
 		return p;
 	}
 	
