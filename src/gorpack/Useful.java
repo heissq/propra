@@ -147,6 +147,28 @@ public class Useful {
 		return k;
 	}
 	
+	public static int type(String path){
+		int ret = 0;
+		try{
+			FileReader input = new FileReader(path);
+			BufferedReader br = new BufferedReader(input);
+			String line;
+			line = br.readLine();
+				if(line.startsWith("//")){ 
+					ret = Integer.parseInt(line.substring(9,10));
+					
+				}
+			br.close();
+			input.close();
+			} catch(FileNotFoundException e){
+				//System.out.println("Hallo");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return ret;
+	}
+	
 	public static int[][][] readmodel(String path){
 		int[][][] out = new int[3][aa][windowsize];
 		try{
@@ -154,7 +176,7 @@ public class Useful {
 			BufferedReader br = new BufferedReader(input);
 			String line;
 			line = br.readLine();
-			if(line.startsWith("//")){ 
+			if(line.startsWith("//")){
 				br.readLine();
 			}
 			int k = -1;
@@ -165,7 +187,50 @@ public class Useful {
 					String[] s = line.split("\t");
 					char c = s[0].charAt(0);
 					for(int i = 0; i < s.length - 1; i++){
-					out[k][aaint(c)][i] = Integer.parseInt(s[i+1]);
+						out[k][aaint(c)][i] = Integer.parseInt(s[i+1]);
+					}
+				}
+			}
+			br.close();
+		} catch(FileNotFoundException e){
+			//System.out.println("Hallo");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return out;
+}
+	
+	public static int[][][][] read3model(String path){
+		int[][][][] out = new int[3][aa][aa][windowsize];
+		try{
+			FileReader input = new FileReader(path);
+			BufferedReader br = new BufferedReader(input);
+			String line;
+			line = br.readLine();
+			if(line.startsWith("//")){ 
+				int dim = Integer.parseInt(line.substring(10,11));
+				br.readLine();
+			}
+			int k = -1;
+			int cha = 0;
+			while((line = br.readLine()) != null){
+				if(line.startsWith("=")) {
+					cha = Integer.parseInt(line.substring(3,4));
+					k = Integer.parseInt(line.substring(1,2));
+					br.readLine();}
+				else if(line.startsWith("Y")) {
+					String[] s = line.split("\t");
+					char c = s[0].charAt(0);
+					for(int i = 0; i < s.length - 1; i++){
+					out[cha][k][aaint(c)][i] = Integer.parseInt(s[i+1]);
+					}
+					br.readLine();br.readLine();}
+				else {
+					String[] s = line.split("\t");
+					char c = s[0].charAt(0);
+					for(int i = 0; i < s.length - 1; i++){
+					out[cha][k][aaint(c)][i] = Integer.parseInt(s[i+1]);
 					}
 				}
 			}
@@ -189,6 +254,19 @@ public class Useful {
 		result = result + "SS " + c + "\n";
 		return result;
 	}
+	public static String makefastastring(Sequence s, String[]pr){
+		String result = "";
+		String a = s.getid();
+		String b = s.getps();
+		String c = s.getss();
+		result = result + ">" + a + "\n";
+		result = result + "AS " + b + "\n";
+		result = result + "SS " + c + "\n";
+		result = result + "PH " + pr[2] + "\n";
+		result = result + "PE " + pr[1] + "\n";
+		result = result + "PC " + pr[0] + "\n";
+		return result;
+	}
 	public static boolean writemodelfile(String path, Gor1Model m) throws IOException{
 		FileWriter pw = new FileWriter(path);
 		String s = "";
@@ -204,6 +282,28 @@ public class Useful {
 			}
 			pw.write("\n");
 			pw.write("\n");
+		}
+		pw.flush();
+		pw.close();
+		return true;
+	}
+	public static boolean writemodelfile(String path, Gor3Model m) throws IOException{
+		FileWriter pw = new FileWriter(path);
+		String s = "";
+		pw.write(m.head + "\n" + "\n");
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < m.naa-1; j++){
+			pw.write("=" + Useful.sschar(i) + "," + Useful.aachar(j) + "=" + "\n" + "\n");
+				for(int k = 0; k < m.naa-1; k++){
+					pw.write(Useful.aachar(k) + "\t");
+					for (int l = 0; l < m.windowsize; l++){
+						pw.write(m.model[i][j][k][l] + "\t");
+					}
+					pw.write("\n");
+			}
+			pw.write("\n");
+			pw.write("\n");
+			}
 		}
 		pw.flush();
 		pw.close();
