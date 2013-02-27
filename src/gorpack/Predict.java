@@ -30,10 +30,12 @@ public class Predict {
 		CommandLine cmd = parser.parse(opt, args);
 		String topred = "";
 		String filename = "";
+		boolean probs = false;
 		//String topred = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 		//String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 		//String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
 		if(cmd.hasOption("probabilities")){
+			probs = true;
 		} else {
 			System.out.println("Dont need this");
 		}
@@ -64,8 +66,12 @@ public class Predict {
 		//System.out.println(prim[0].getps());
 		String prediction = g.predictString(prim[0].getps());
 		//System.out.println(prediction);
+		//String[] pvalues = g.predictProbsString(prim[0].getps());
 		Sequence p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		if(probs){
+			//System.out.println(Useful.makefastastring(p, pvalues));
+		} else {
 		System.out.println(Useful.makefastastring(p));
+		}
 	}
-
 }
