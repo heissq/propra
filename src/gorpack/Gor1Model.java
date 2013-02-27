@@ -9,6 +9,7 @@ public class Gor1Model implements GorModel {
 	final static int nstates = 3;
 	final static int naa = 21;
 	final static int windowsize = 17;
+	public final static String head = "// Matrix3D";
 	int whalf = (int) Math.floor(windowsize/2.0);
 	int[][][] model = new int[nstates][naa][windowsize];
 	//Windowsize flexibel
@@ -25,18 +26,32 @@ public class Gor1Model implements GorModel {
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					this.model[i][j][k] = 1;
+					this.model[i][j][k] = 0;
 				}
 			}
 		}
 	}
 //works
-	// Fills matrix according to training results
-	public void makematrix(int[][][] mod){
+	
+	public static int[] summatrix(int[][][] mod){
+		int[] ct = new int[3];
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  Math.log((numss[0]+numss[1]+numss[2]-numss[i])/(double)numss[i]);
+					ct[i] += mod[i][j][k];
+				}
+			}
+		}
+		return ct;
+	}
+	
+	// Fills matrix according to training results
+	public void makematrix(int[][][] mod){
+		int[] summ = summatrix(mod);
+		for(int i = 0; i < nstates; i++){
+			for(int j = 0; j < naa; j++){
+				for(int k = 0; k < windowsize; k++) {
+					matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  Math.log((summ[0]+summ[1]+summ[2]-summ[i])/(double)summ[i]);
 				}
 			}
 		}
@@ -53,9 +68,9 @@ public class Gor1Model implements GorModel {
 				numss[ss[i]]++;
 			}
 		}
-		numss[0] += Useful.countss(sek)[0];
-		numss[1] += Useful.countss(sek)[1];
-		numss[2] += Useful.countss(sek)[2];
+		//numss[0] += Useful.countss(sek)[0];
+		//numss[1] += Useful.countss(sek)[1];
+		//numss[2] += Useful.countss(sek)[2];
 		makematrix(this.model);
 	}
 	//Trains Gor1 Model based on file path
@@ -86,7 +101,7 @@ public class Gor1Model implements GorModel {
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
 		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
-		else p[3] = 1;
+		else p[3] = 3;
 		return p;
 	}
 	
