@@ -9,6 +9,7 @@ public class Gor1Model implements GorModel {
 	final static int nstates = 3;
 	final static int naa = 21;
 	final static int windowsize = 17;
+	public final static String head = "// Matrix3D";
 	int whalf = (int) Math.floor(windowsize/2.0);
 	int[][][] model = new int[nstates][naa][windowsize];
 	//Windowsize flexibel

@@ -172,5 +172,29 @@ public class Useful {
 			}
 			return out;
 	}
+	
+	public boolean makefasta(){
+		return false;
+	}
+	public static boolean writemodelfile(String path, Gor1Model m) throws IOException{
+		FileWriter pw = new FileWriter(path);
+		String s = "";
+		pw.write(m.head + "\n" + "\n");
+		for(int i = 0; i < 3; i++){
+			pw.write("=" + Useful.sschar(i) + "=" + "\n" + "\n");
+			for(int j = 0; j < m.naa-1; j++){
+				pw.write(Useful.aachar(j) + "\t");
+				for (int k = 0; k < m.windowsize; k++){
+					pw.write(m.model[i][j][k] + "\t");
+				}
+				pw.write("\n");
+			}
+			pw.write("\n");
+			pw.write("\n");
+		}
+		pw.flush();
+		pw.close();
+		return true;
+	}
 
 }

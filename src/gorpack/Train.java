@@ -23,25 +23,28 @@ public class Train {
 		String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
 		// TODO Auto-generated method stub
 		Gor1Model g = new Gor1Model();
-		FileWriter pw = new FileWriter(filename);
-		//g.train("MFKVYGYDSNIHKCVYCDNAKRLLTVKKQPFEFINIMPEKGVFDDEKIAELLTKLGRDTQIGLTMPQVFAPDGSHIGGFDQLREYFK", "CEEEEECCCCCCCCHHHHHHHHHHHHCCCCEEEEECCCECCECCHHHHHHHHHHHCCCCCCCCCCCEEECCCCCEEECHHHHHHHCC");
 		g.train(p);
-		String s = "";
-		pw.write(head + "\n" + "\n");
-		for(int i = 0; i < 3; i++){
-			pw.write("=" + Useful.sschar(i) + "=" + "\n" + "\n");
-			for(int j = 0; j < aa-1; j++){
-				pw.write(Useful.aachar(j) + "\t");
-				for (int k = 0; k < windowsize; k++){
-					pw.write(g.model[i][j][k] + "\t");
-				}
-				pw.write("\n");
-			}
-			pw.write("\n");
-			pw.write("\n");
-		}
-		pw.flush();
-		pw.close();
+//		FileWriter pw = new FileWriter(filename);
+//		//g.train("MFKVYGYDSNIHKCVYCDNAKRLLTVKKQPFEFINIMPEKGVFDDEKIAELLTKLGRDTQIGLTMPQVFAPDGSHIGGFDQLREYFK", "CEEEEECCCCCCCCHHHHHHHHHHHHCCCCEEEEECCCECCECCHHHHHHHHHHHCCCCCCCCCCCEEECCCCCEEECHHHHHHHCC");
+//		g.train(p);
+//		String s = "";
+//		pw.write(head + "\n" + "\n");
+//		for(int i = 0; i < 3; i++){
+//			pw.write("=" + Useful.sschar(i) + "=" + "\n" + "\n");
+//			for(int j = 0; j < aa-1; j++){
+//				pw.write(Useful.aachar(j) + "\t");
+//				for (int k = 0; k < windowsize; k++){
+//					pw.write(g.model[i][j][k] + "\t");
+//				}
+//				pw.write("\n");
+//			}
+//			pw.write("\n");
+//			pw.write("\n");
+//		}
+//		pw.flush();
+//		pw.close();
+		
+		Useful.writemodelfile(filename, g);
 	}
 
 }
