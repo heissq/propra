@@ -24,38 +24,31 @@ public class Train {
 		opt.addOption("", "model", true, "The model file to be created");
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = parser.parse(opt, args);
+		String p = "";
+		String filename = "";
 		if(cmd.hasOption("db")){
-			String p = cmd.getOptionValue("db");
+			p = cmd.getOptionValue("db");
+		} else {
+			System.out.println("Select Database");
 		}
-		if(cmd.hasOption("method")){}
+		if(cmd.hasOption("method")){
+			switch(cmd.getOptionValue("method")){
+			case "gor1": Gor1Model g = new Gor1Model();
+			}
+		} else {
+			System.out.println("Default Method Gor1 selected");
+		}
 		if(cmd.hasOption("model")){
-			String filename = cmd.getOptionValue("model");
+			filename = cmd.getOptionValue("model");
+		} else {
+			filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
+			System.out.println("foo");
 		}
-		String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
-		String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
+		//String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
+		//String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
 		// TODO Auto-generated method stub
 		Gor1Model g = new Gor1Model();
 		g.train(p);
-//		FileWriter pw = new FileWriter(filename);
-//		//g.train("MFKVYGYDSNIHKCVYCDNAKRLLTVKKQPFEFINIMPEKGVFDDEKIAELLTKLGRDTQIGLTMPQVFAPDGSHIGGFDQLREYFK", "CEEEEECCCCCCCCHHHHHHHHHHHHCCCCEEEEECCCECCECCHHHHHHHHHHHCCCCCCCCCCCEEECCCCCEEECHHHHHHHCC");
-//		g.train(p);
-//		String s = "";
-//		pw.write(head + "\n" + "\n");
-//		for(int i = 0; i < 3; i++){
-//			pw.write("=" + Useful.sschar(i) + "=" + "\n" + "\n");
-//			for(int j = 0; j < aa-1; j++){
-//				pw.write(Useful.aachar(j) + "\t");
-//				for (int k = 0; k < windowsize; k++){
-//					pw.write(g.model[i][j][k] + "\t");
-//				}
-//				pw.write("\n");
-//			}
-//			pw.write("\n");
-//			pw.write("\n");
-//		}
-//		pw.flush();
-//		pw.close();
-		
 		Useful.writemodelfile(filename, g);
 	}
 

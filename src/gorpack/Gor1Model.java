@@ -11,9 +11,9 @@ public class Gor1Model implements GorModel {
 	final static int windowsize = 17;
 	public final static String head = "// Matrix3D";
 	int whalf = (int) Math.floor(windowsize/2.0);
-	int[][][] model = new int[nstates][naa][windowsize];
+	int[][][] model;
 	//Windowsize flexibel
-	double[][][] matrix = new double[nstates][naa][windowsize];
+	double[][][] matrix;
 	int[] numss = {1,1,1};
 	public String readfile(String filename) {
 		// TODO Auto-generated method stub
@@ -47,11 +47,14 @@ public class Gor1Model implements GorModel {
 	
 	// Fills matrix according to training results
 	public void makematrix(int[][][] mod){
+		this.matrix = new double[nstates][naa][windowsize];
 		int[] summ = summatrix(mod);
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] + mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  Math.log((summ[0]+summ[1]+summ[2]-summ[i])/(double)summ[i]);
+					matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] +
+							mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  
+							Math.log((summ[0]+summ[1]+summ[2]-summ[i])/(double)summ[i]);
 				}
 			}
 		}
@@ -84,9 +87,6 @@ public class Gor1Model implements GorModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(numss[0]);
-		System.out.println(numss[1]);
-		System.out.println(numss[2]);
 		
 	}
 	
@@ -115,6 +115,19 @@ public class Gor1Model implements GorModel {
 		
 		return r;
 	}
+	public int[][] probabilites(int[] ps){
+		int[][] r = new int[ps.length][nstates];
+		for(int i = 8; i < ps.length-8; i++){
+		double[] p = prob(ps, i);
+			for(int j = 0; j < nstates; j++){
+			r[i][j] = (int) p[j];
+		}
+		}
+		//System.out.println("foobar");
+		return r;
+	}
+	
+	
 	
 	public String predictString(int[] ps){
 		int[] num = predict(ps);
@@ -142,6 +155,7 @@ public class Gor1Model implements GorModel {
 	}
 	
 	public void setmodel(int[][][] arg){
+		this.model = new int[nstates][naa][windowsize];
 		for(int i = 0; i < 3; i++){
 			for(int j = 0; j<20; j++){
 				for(int k = 0; k<17; k++){
