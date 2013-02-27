@@ -93,6 +93,7 @@ public class Useful {
 	//works as of 26-02 15:17
 	public static Sequence[] filetosequence(String path, int tr) throws FileNotFoundException{
 		Sequence[] out = new Sequence[10000];
+
 		for(int i = 0; i<10000; i++){
 			out[i] = new Sequence();
 		}
@@ -102,20 +103,23 @@ public class Useful {
 		String line;
 		int ct = 0;
 		line = br.readLine();
-		if(line.startsWith(">")){ 
+		if(line.startsWith(">")){ 	
 			out[0].setid(line);
 		}
 		while((line = br.readLine()) != null){
+			//System.out.println("++++"+line);
 			if(line.startsWith(">")) {
 				String foo = line.substring(tr);
 				out[ct].setid(foo);}
 			else if(line.startsWith("AS")) {
+				
 				String foo = line.substring(3);
 				out[ct].setps(foo);}
 			else if(line.startsWith("SS")) {
 				String foo = line.substring(3);
 				out[ct].setss(foo);}
 			else ct++;
+			//System.out.println(">>>>"+out[0].getps());
 		}
 		br.close();
 		} catch(FileNotFoundException e){
@@ -124,6 +128,8 @@ public class Useful {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 		return out;
 	}
 	
@@ -153,7 +159,7 @@ public class Useful {
 			}
 			int k = -1;
 			while((line = br.readLine()) != null){
-				if(line.startsWith("=")) {k++; br.readLine(); br.readLine();}
+				if(line.startsWith("=")) {k++; br.readLine();}
 				else if(line.startsWith("Y")) {br.readLine(); br.readLine();}
 				else {
 					String[] s = line.split("\t");
@@ -173,8 +179,15 @@ public class Useful {
 			return out;
 	}
 	
-	public boolean makefasta(){
-		return false;
+	public static String makefastastring(Sequence s){
+		String result = "";
+		String a = s.getid();
+		String b = s.getps();
+		String c = s.getss();
+		result = result + ">" + a + "\n";
+		result = result + "AS " + b + "\n";
+		result = result + "SS " + c + "\n";
+		return result;
 	}
 	public static boolean writemodelfile(String path, Gor1Model m) throws IOException{
 		FileWriter pw = new FileWriter(path);
