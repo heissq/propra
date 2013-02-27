@@ -2,13 +2,14 @@
 
 use strict;
 use Getopt::Long;
+use LWP::Simple;
 
 my $dssp_folder = '/home/proj/biocluster/praktikum/bioprakt/Data/DSSP/';
 my $pdb_folder  = '/home/proj/biocluster/praktikum/bioprakt/Data/PDB/';
 
 my $pdb      = '';
 my $dssp     = '';
-my $dssp_bin = '';
+my $dssp_bin = 'dssp-2.0.4-linux-amd64';
 
 my $mode      = '';
 my $dssp_file = '';
@@ -50,23 +51,23 @@ if ( $mode eq 'dssp' ) {
    # do dssp mode
 
    # files suchen nach pdb ids
-   my $array_ref = getFiles( $dssp_folder, \@pdb_id_list );
+   my $array_ref = getFiles( $dssp_folder, \@pdb_id_list, 1 );
 @file_protein_list = @{$array_ref};
 
 # files einlesen
 foreach (@file_protein_list) {
-   my $reference     = '';
-   my $source        = '';
-   my $aa_sequence   = ();
-   my $sec_sequence  = ();
-   my $istable       = 0;
-   my $pdbid         = '';
-   my @aa_sequences  = ();
-   my @sec_sequences = ();
-   my $last_line = '';
-   my @id_seq = ();
+   my $reference       = '';
+   my $source          = '';
+   my $aa_sequence     = ();
+   my $sec_sequence    = ();
+   my $istable         = 0;
+   my $pdbid           = '';
+   my @aa_sequences    = ();
+   my @sec_sequences   = ();
+   my $last_line       = '';
+   my @id_seq          = ();
    my $seq_break_count = 0;
-   my $last_seq_id = '';
+   my $last_seq_id     = '';
 
    open FILE, "<$_" or die $!;
 
@@ -104,10 +105,10 @@ foreach (@file_protein_list) {
          $aa_sequence  .= $1;
          $sec_sequence .= $tmp_sec;
       }
-      if ( $line =~ m/!\*/) {
+      if ( $line =~ m/!\*/ ) {
          push @aa_sequences,  $aa_sequence;
          push @sec_sequences, $sec_sequence;
-         $aa_sequence = '';
+         $aa_sequence  = '';
          $sec_sequence = '';
          $last_line =~ /^.{11}(\w)/;
          $last_seq_id = $1;
@@ -119,28 +120,33 @@ foreach (@file_protein_list) {
       }
 
       # pdbid einfügen
-      if ($last_line =~  m/^.{11}\s.+!\*/) { 
-      # für new chain
-        $seq_break_count = 0;
-        push @id_seq,"$pdbid$last_seq_id";
-      } elsif ( $last_line =~  m/^.{11}\s.+! / ) {
-      # für chainbreak
-      #my $tmp_seq_break_count = '';
-      #$tmp_seq_break_count = sprintf ("%02d",int($seq_break_count));
-      push @id_seq,"$pdbid$last_seq_id";
-      #$seq_break_count++;
+      if ( $last_line =~ m/^.{11}\s.+!\*/ ) {
+
+         # für new chain
+         $seq_break_count = 0;
+         push @id_seq, "$pdbid$last_seq_id";
+      }
+      elsif ( $last_line =~ m/^.{11}\s.+! / ) {
+
+         # für chainbreak
+         #my $tmp_seq_break_count = '';
+         #$tmp_seq_break_count = sprintf ("%02d",int($seq_break_count));
+         push @id_seq, "$pdbid$last_seq_id";
+
+         #$seq_break_count++;
       }
       $last_line = $line;
    }
+
    # letzte sequenz in arrays
    push @aa_sequences,  $aa_sequence;
    push @sec_sequences, $sec_sequence;
    $last_line =~ /^.{11}(\w)/;
-   push @id_seq,"$pdbid$1";
-
+   push @id_seq, "$pdbid$1";
 
    # in file einlesen die als dssp paramter angeben ist
-   open FILEPRINT, ">$dssp_file" or die "kann datei $dssp_file nicht erstellen\n";
+   open FILEPRINT, ">$dssp_file"
+      or die "kann datei $dssp_file nicht erstellen\n";
    for my $i ( 0 .. $#aa_sequences ) {
       print FILEPRINT "\> $id_seq[$i]\n";
       print FILEPRINT "AS $aa_sequences[$i]\n";
@@ -172,9 +178,38 @@ if ( $dssp_bin ne '' ) {
 sub getFiles {
    my @pdb_id_list_tmp = @{ $_[1] };
    my @file_list       = ();
-   my @missing_pdbids = ();
+   my @missing_pdbids  = ();
+   my $folder = $_[0];
+
    # TODO filedownload when no file for pdbid
    # -aufgabenblatt 3 aufgabe 10
+   my $endung = '';
+
+   if ( $_[2] ) {
+      $endung = 'dssp';
+   }
+   else {
+      $endung = 'ent';
+   }
+
+   foreach (@pdb_id_list_tmp) {
+      my $currentpath = ''; # `find $folder -name $_.$endung -type f`;
+      if ( $currentpath ne '' ) {
+         push @file_list, $currentpath;
+         print "gefunden und $currentpath";
+      }
+      else {
+         # runterladen
+         my $FILE = get("http://www.rcsb.org/pdb/files/pdb$_.pdb");
+         open (FH,">pdb-download/pdb$_.pdb");
+         print FH $FILE;
+
+         # konvertieren
+         `$dssp_bin -i pdb-download/pdb$_.pdb -o dssp-converted/$_.dssp`; 
+         push @file_list,"dssp-converted/$_.dssp";
+         close (FH);
+      }
+   }
 
    opendir( DIR, "$_[0]" ) or die "$_[0]\/\n";
    while ( my $f = readdir(DIR) ) {    # dssp- oder pdb-ordner
@@ -183,7 +218,7 @@ sub getFiles {
          # werden versteckte (.dateiname) dateien nicht aufgerufen
          opendir( SUBDIR, "$_[0]\/$f\/" )
             or die "ordner nicht vorhanden unterordner:$f\n";
-         while ( my $sf = readdir(SUBDIR) ) {    # unterodnern
+         while ( my $sf = readdir(SUBDIR) ) {    # unterordner
             if ( $_[0] =~ m/DSSP/ ) {
 
                # dssp mode
@@ -211,6 +246,7 @@ sub getFiles {
       }
    }
    closedir(DIR);
+
    return \@file_list;
 }
 
