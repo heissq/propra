@@ -4,8 +4,8 @@ import java.io.*;
 
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
-	public final int aa = 21;
-	public final int windowsize = 17;
+	public final static int aa = 21;
+	public final static int windowsize = 17;
 	public static int[] countss(String ss){
 		int[] r = {0,0,0};
 		for(int i = 0; i<ss.length(); i++){
@@ -16,7 +16,8 @@ public class Useful {
 		return r;
 	}
 	
-	public static String aminoacids = "ARNDCQEGHILKMFPSTWYV";
+	public static String aminoacids = "ACDEFGHIKLMNPQRSTVWY";
+	
 	
 	//Amino Acid -> Integer
 	public static int aaint(char aa){
@@ -136,27 +137,27 @@ public class Useful {
 		return k;
 	}
 	
-	public int[][][] readmatrix(String path){
-		int[][][] out = new int[3][21][17];
+	public static int[][][] readmodel(String path){
+		int[][][] out = new int[3][aa][windowsize];
 		try{
 			FileReader input = new FileReader(path);
 			BufferedReader br = new BufferedReader(input);
 			String line;
-			int ct = 0;
 			line = br.readLine();
-			if(line.startsWith("Cter")){ 
-				ct++;
+			if(line.startsWith("//")){ 
+				br.readLine();
 			}
+			int k = -1;
 			while((line = br.readLine()) != null){
-				if(line.startsWith(">")) ct++;
+				if(line.startsWith("=")) {k++; br.readLine(); br.readLine();}
+				else if(line.startsWith("Y")) {br.readLine(); br.readLine();}
 				else {
 					String[] s = line.split("\t");
 					char c = s[0].charAt(0);
-					for(int i = 0; i < windowsize; i++){
-					out[0][aaint(c)][i] = Integer.parseInt(s[i+1]);
+					for(int i = 0; i < s.length - 1; i++){
+					out[k][aaint(c)][i] = Integer.parseInt(s[i+1]);
 					}
-					ct++;
-				} 
+				}
 			}
 			br.close();
 			} catch(FileNotFoundException e){

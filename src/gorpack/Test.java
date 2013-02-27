@@ -25,5 +25,8 @@ public static void main(String[] Args) throws FileNotFoundException{
 	Sequence[] bla = Useful.filetosequence("/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db");
 	//System.out.println(bla[0].getss());
 	System.out.println(g.predictString("SAISFHSGYSGLVATVSGSQQTLVVALNSDLGNPGQVASGSFSEAVNASNGQVRVWR"));
+	System.out.println(g.summatrix(g.model)[1]);
+	int[][][] tests = Useful.readmodel("/home/proj/biocluster/praktikum/bioprakt/Data/commandline/gor_examples/gor1_cb513_model.txt");
+	System.out.println(tests[2][2][5]);
 }
 }
