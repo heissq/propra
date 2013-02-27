@@ -73,6 +73,8 @@ if ( $mode eq 'pdb' ) {
     foreach (@file_protein_list) {
         print $_;
 
+        # variablen
+        my @helix_start = ();
 
         # start und ende positionen TODO
         my @helix_end       = ();
@@ -144,13 +146,11 @@ if ( $mode eq 'pdb' ) {
         }
 
         print "\n\n\n";
-        $hash_ref       = createStubSecChains( \%sequences );
+        my $hash_ref       = createStubSecChains( \%sequences );
         my %secondary_hash = %$hash_ref;
         foreach my $key ( sort keys %secondary_hash ) {
             print "$key => $secondary_hash{$key}\n";
         }
-
-        processSecChains(\@helix_start,\@helix_end,$helix_chain,\@sheet_start,\@sheet_end,$sheet_chain,\%secondary_hash);
     }
 }
 
@@ -169,32 +169,25 @@ sub createStubSecChains {
 }
 
 sub processSecChains {
-    my @hstart = @{$_[0]};
-    print join(',',@hstart);
-    my @hend   = @{$_[1]};
-    print "\n";
-    print join(',',@hend);
-    print "\n";
+    my @hstart = @$_[0];
+    my @hend   = @$_[1];
     my $hchain = $_[2];
-    my @sstart = @{$_[3]};
-    my @send   = @{$_[4]};
+    my @sstart = @$_[3];
+    my @send   = @$_[4];
     my $schain = $_[5];
     my %hash   = %{ $_[6] };
 
-    
     for my $i ( 0 .. $#hstart ) {
-       my $chain = substr( $hchain, $i, 1 );
-       print "$i\n";
-        my $tmpstr = $hash{ $chain };
-
-        print $tmpstr,"\n";
-        $tmpstr =~ s/^(.{$hstart[$i]}).{$hend[$i]-$hstart[$i]+1}(.*)$/$1H$2/;
-        print ">>",$tmpstr,"\n";
+        my $tmpstr = $hash{ substr( $hchain, $i, 1 ) };
+        print $tmpstr;
         for my $x ( $hstart[$i] - 1 .. $hend[$i] ) {
-            $tmpstr = substr( $hash{ $chain }, $x, 1, 'H' );
+            $tmpstr = substr( $hash{ substr( $hchain, $i, 1 ) }, $x, $x, 'H' );
         }
-        $hash{ substr( $hchain, $i, 1 ) } = $tmpstr;
-        #print $hash{ substr( $hchain, $i, 1 ) };
+        $hash{ substr( $hchain, $i, 1 ) } = substr(
+            $hash{ substr( $hchain, $i, 1 ) },
+            $hstart[$i] - 1,
+            $hend[$i], 'H'
+        );
     }
     foreach my $key ( sort keys %hash ) {
         print "$key => $hash{$key}\n";
