@@ -147,9 +147,9 @@ public String[] probabilities(int[] ps){
 		for(int i = 8; i < ps.length-8; i++){
 		double[] p = prob(ps, i);
 			for(int j = 0; j < nstates; j++){
-			r[0] = r[0] + ((int) (p[0] / p[0]+p[1]+p[2]+p[3] * 4) + 5);
-			r[1] = r[1] + ((int) (p[1] / p[0]+p[1]+p[2]+p[3] * 4) + 5);
-			r[2] = r[2] + ((int) (p[2] / p[0]+p[1]+p[2]+p[3] * 4) + 5);
+			r[0] = r[0] +Math.abs((int) (p[0] / p[0]+p[1]+p[2]+p[3] * 10));
+			r[1] = r[1] +Math.abs((int) (p[1] / p[0]+p[1]+p[2]+p[3] * 10));
+			r[2] = r[2] +Math.abs((int) (p[2] / p[0]+p[1]+p[2]+p[3] * 10));
 		}
 		}
 		//System.out.println("foobar");
