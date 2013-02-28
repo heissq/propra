@@ -171,6 +171,7 @@ public class Useful {
 	
 	public static int[][][] readmodel(String path){
 		int[][][] out = new int[3][aa][windowsize];
+		//Letzte Zeile des Modells auf 0 setzen
 		try{
 			FileReader input = new FileReader(path);
 			BufferedReader br = new BufferedReader(input);
@@ -182,8 +183,14 @@ public class Useful {
 			int k = -1;
 			while((line = br.readLine()) != null){
 				if(line.startsWith("=")) {k++; br.readLine();}
-				else if(line.startsWith("Y")) {br.readLine(); br.readLine();}
-				else {
+				else if(line.startsWith("Y")) {
+					String[] s = line.split("\t");
+					char c = s[0].charAt(0);
+					for(int i = 0; i < s.length - 1; i++){
+					out[k][19][i] = Integer.parseInt(s[i+1]);
+					}
+					br.readLine(); br.readLine();
+				} else {
 					String[] s = line.split("\t");
 					char c = s[0].charAt(0);
 					for(int i = 0; i < s.length - 1; i++){
@@ -209,15 +216,15 @@ public class Useful {
 			String line;
 			line = br.readLine();
 			if(line.startsWith("//")){ 
-				int dim = Integer.parseInt(line.substring(10,11));
+				int dim = Integer.parseInt(line.substring(9,10));
 				br.readLine();
 			}
 			int k = -1;
 			int cha = 0;
 			while((line = br.readLine()) != null){
 				if(line.startsWith("=")) {
-					cha = Integer.parseInt(line.substring(3,4));
-					k = Integer.parseInt(line.substring(1,2));
+					cha = sstoint(line.substring(3,4))[0];
+					k = aatoint(line.substring(1,2))[0];
 					br.readLine();}
 				else if(line.startsWith("Y")) {
 					String[] s = line.split("\t");
@@ -225,7 +232,8 @@ public class Useful {
 					for(int i = 0; i < s.length - 1; i++){
 					out[cha][k][aaint(c)][i] = Integer.parseInt(s[i+1]);
 					}
-					br.readLine();br.readLine();}
+					br.readLine();
+					br.readLine();}
 				else {
 					String[] s = line.split("\t");
 					char c = s[0].charAt(0);
@@ -254,7 +262,7 @@ public class Useful {
 		result = result + "SS " + c + "\n";
 		return result;
 	}
-	public static String makefastastring(Sequence s, String[]pr){
+	/*public static String makefastastring(Sequence s, String[]pr){
 		String result = "";
 		String a = s.getid();
 		String b = s.getps();
@@ -266,7 +274,7 @@ public class Useful {
 		result = result + "PE " + pr[1] + "\n";
 		result = result + "PC " + pr[0] + "\n";
 		return result;
-	}
+	}*/
 	public static boolean writemodelfile(String path, Gor1Model m) throws IOException{
 		FileWriter pw = new FileWriter(path);
 		String s = "";

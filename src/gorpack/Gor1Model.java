@@ -53,7 +53,7 @@ public class Gor1Model implements GorModel {
 		for(int i = 0; i < nstates; i++){
 			for(int j = 0; j < naa; j++){
 				for(int k = 0; k < windowsize; k++) {
-					matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] +
+					this.matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] +
 							mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  
 							Math.log((summ[0]+summ[1]+summ[2]-summ[i])/(double)summ[i]);
 				}
@@ -121,18 +121,40 @@ public class Gor1Model implements GorModel {
 		return r;
 	}
 	
+	public int[][] predictProbs(int[] ps){
+		int[][] r = new int[3][ps.length];
+		for(int x = 0; x < whalf; x++){
+			r[0][x] = 3;
+			r[1][x] = 3;
+			r[2][x] = 3;
+			r[0][ps.length - x -1] = 3;
+			r[1][ps.length - x -1] = 3;
+			r[2][ps.length - x -1] = 3;
+		}
+		for(int i = whalf; i < ps.length-whalf; i++){
+			double[] p = prob(ps, i);
+			r[0][i] = (int) p[0];
+			r[1][i] = (int) p[1];
+			r[2][i] = (int) p[2];
+			//System.out.println("foobar");
+		}
+		
+		return r;
+	}
 	
-//	public int[][] probabilities(int[] ps){
-//		int[][] r = new int[ps.length][nstates];
-//		for(int i = 8; i < ps.length-8; i++){
-//		double[] p = prob(ps, i);
-//			for(int j = 0; j < nstates; j++){
-//			r[i][j] = (int) (p[j] / p[0]+p[1]+p[2]+p[3]) * 10;
-//		}
-//		}
-//		//System.out.println("foobar");
-//		return r;
-//	}
+public String[] probabilities(int[] ps){
+		String[] r = new String[3];
+		for(int i = 8; i < ps.length-8; i++){
+		double[] p = prob(ps, i);
+			for(int j = 0; j < nstates; j++){
+			r[0] = r[0] + ((int) (p[0] / p[0]+p[1]+p[2]+p[3] * 5) + 5);
+			r[1] = r[1] + ((int) (p[1] / p[0]+p[1]+p[2]+p[3] * 5) + 5);
+			r[2] = r[2] + ((int) (p[2] / p[0]+p[1]+p[2]+p[3] * 5) + 5);
+		}
+		}
+		//System.out.println("foobar");
+		return r;
+	}
 	
 	
 	
@@ -147,7 +169,13 @@ public class Gor1Model implements GorModel {
 		//System.out.println(num[1]);
 		return Useful.makess(num);
 	}
-	
+	public String predictStringProbs(String ps){
+		int[] foo = Useful.aatoint(ps);
+		int[] num = predict(foo);
+		String[] probs = probabilities(foo);
+		//System.out.println(num[1]);
+		return "\n" + "PH" + probs[2] + "\n" + "PE" + probs[1] + "\n" + "PE" + probs[0] ;
+	}
 	/*public int[][] predictProbs(String ps){
 		int[][] res = new int[3][ps.length()];
 		int[] foo = Useful.aatoint(ps);
@@ -191,9 +219,9 @@ public class Gor1Model implements GorModel {
 	
 	public void setmodel(int[][][] arg){
 		this.model = new int[nstates][naa][windowsize];
-		for(int i = 0; i < 3; i++){
-			for(int j = 0; j<20; j++){
-				for(int k = 0; k<17; k++){
+		for(int i = 0; i < nstates; i++){
+			for(int j = 0; j<naa; j++){
+				for(int k = 0; k<windowsize; k++){
 					this.model[i][j][k] = arg[i][j][k];
 				}
 			}

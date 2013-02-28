@@ -21,7 +21,7 @@ public class Predict {
 		//prim is generated
 		//reading does not work here. reading cmd works for train. 15:54
 		Options opt = new Options();
-		Gor1Model g = new Gor1Model();
+		//Gor1Model g = new Gor1Model();
 		opt.addOption("", "probabilities", true, "Print Probabilities?");
 		opt.addOption("", "model", true, "The model file to be used");
 		opt.addOption("", "format", true, "The output format");
@@ -54,21 +54,37 @@ public class Predict {
 		} else {
 			System.out.println("Sequence file not found");
 		}
-		
+		int type = Useful.type(filename);
 		//System.out.println(filename+topred);
 		Sequence[] prim = Useful.filetosequence(topred);
 		//System.out.println(prim[2].getps());
-		int[][][] modelarr = Useful.readmodel(filename);
-		
-		//System.out.println(modelarr[0][0][0]);
+		Sequence p = new Sequence();
+		String probabilities = "";
+		if(type == 4) {
+		Gor3Model g = new Gor3Model();
+		int[][][][] modelarr = Useful.read3model(filename);
 		g.setmodel(modelarr);
 		g.makematrix(modelarr);
-		//System.out.println(prim[0].getps());
 		String prediction = g.predictString(prim[0].getps());
+		p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		} else {
+		Gor1Model g = new Gor1Model();
+		int[][][] modelarr = Useful.readmodel(filename);
+		g.setmodel(modelarr);
+		g.makematrix(modelarr);
+		String prediction = g.predictString(prim[0].getps());
+		probabilities = g.predictStringProbs(prim[0].getps());
+		p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		}
+		//System.out.println(modelarr[0][0][0]);
+		//g.setmodel(modelarr);
+		//g.makematrix(modelarr);
+		//System.out.println(prim[0].getps());
 		//System.out.println(prediction);
 		//String[] pvalues = g.predictProbsString(prim[0].getps());
-		Sequence p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		
 		if(probs){
+		System.out.println(Useful.makefastastring(p) + probabilities);
 			//System.out.println(Useful.makefastastring(p, pvalues));
 		} else {
 		System.out.println(Useful.makefastastring(p));
