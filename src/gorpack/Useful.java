@@ -48,6 +48,17 @@ public class Useful {
 		return ret;
 	}
 	
+	
+	// Secondary Structure -> Integer
+		public static int ssint(char aa){
+			switch(aa){
+				case 'C': return 0;
+				case 'E': return 1;
+				case 'H': return 2;
+			}
+			return 3;
+		}
+	
 	public static String sschar(int i){
 		if(i == 0) return "C";
 		else if(i == 1) return "E";
