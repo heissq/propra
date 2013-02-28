@@ -37,3 +37,7 @@ bin
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# Files die man nicht braucht von perl pdb etc...
+*.ent
+*.pdb
