@@ -41,7 +41,7 @@ public class CreateSummary {
 	}
 
 	public void createFile() throws IOException {
-		try {
+		try { //TODO format richtig ansetzen
 			// Create file
 			FileWriter fstream = new FileWriter("out.txt");
 			BufferedWriter out = new BufferedWriter(fstream);
