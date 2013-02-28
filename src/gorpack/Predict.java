@@ -43,7 +43,7 @@ public class Predict {
 			filename = cmd.getOptionValue("model");
 		
 		} else {
-			System.out.println("Model not found");
+			System.out.println("Y U no select model");
 		}
 		if(cmd.hasOption("format")){
 		} else {
@@ -52,7 +52,7 @@ public class Predict {
 		if(cmd.hasOption("seq")){
 			topred = cmd.getOptionValue("seq");
 		} else {
-			System.out.println("Sequence file not found");
+			System.out.println("U stupid?");
 		}
 		int type = Useful.type(filename);
 		//System.out.println(filename+topred);

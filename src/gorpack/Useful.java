@@ -90,7 +90,7 @@ public class Useful {
 		return out;
 	}
 	
-	//works as of 26-02 15:17
+	//works as of 26-02 15:17 parses file to sequence
 	public static Sequence[] filetosequence(String path, int tr) throws FileNotFoundException{
 		Sequence[] out = new Sequence[10000];
 
@@ -136,7 +136,7 @@ public class Useful {
 	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
 		return filetosequence(path, 2);
 	}
-	
+	//makes Secondary Structure String from int array
 	public static String makess(int[] ss){
 		String sek = "";
 		String k = "";
@@ -146,7 +146,7 @@ public class Useful {
 		}
 		return k;
 	}
-	
+	//reads type of Gor Matrix file
 	public static int type(String path){
 		int ret = 0;
 		try{
@@ -168,7 +168,7 @@ public class Useful {
 			}
 		return ret;
 	}
-	
+	//reads three dimensional model file
 	public static int[][][] readmodel(String path){
 		int[][][] out = new int[3][aa][windowsize];
 		//Letzte Zeile des Modells auf 0 setzen
@@ -207,7 +207,7 @@ public class Useful {
 		}
 		return out;
 }
-	
+	//reads four dimensional model file
 	public static int[][][][] read3model(String path){
 		int[][][][] out = new int[3][aa][aa][windowsize];
 		try{
@@ -251,7 +251,7 @@ public class Useful {
 			}
 			return out;
 	}
-	
+	//takes sequence, makes FASTA format output
 	public static String makefastastring(Sequence s){
 		String result = "";
 		String a = s.getid();
@@ -275,6 +275,7 @@ public class Useful {
 		result = result + "PC " + pr[0] + "\n";
 		return result;
 	}*/
+	//takes model and writes values to file selected with path
 	public static boolean writemodelfile(String path, Gor1Model m) throws IOException{
 		FileWriter pw = new FileWriter(path);
 		String s = "";
@@ -295,6 +296,7 @@ public class Useful {
 		pw.close();
 		return true;
 	}
+	//same for gor3
 	public static boolean writemodelfile(String path, Gor3Model m) throws IOException{
 		FileWriter pw = new FileWriter(path);
 		String s = "";
