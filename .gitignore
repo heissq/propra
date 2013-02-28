@@ -5,6 +5,8 @@
 *.exe
 *.o
 *.so
+*.class
+bin
 
 # Packages #
 ############
