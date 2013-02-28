@@ -291,13 +291,13 @@ public class Useful {
 		FileWriter pw = new FileWriter(path);
 		String s = "";
 		pw.write(m.head + "\n" + "\n");
-		for(int i = 0; i < 3; i++){
-			for(int j = 0; j < m.naa-1; j++){
-			pw.write("=" + Useful.sschar(i) + "," + Useful.aachar(j) + "=" + "\n" + "\n");
+		for(int i = 0; i < m.naa-1; i++){
+			for(int j = 0; j < 3; j++){
+			pw.write("=" + Useful.aachar(i) + "," + Useful.sschar(j) + "=" + "\n" + "\n");
 				for(int k = 0; k < m.naa-1; k++){
 					pw.write(Useful.aachar(k) + "\t");
 					for (int l = 0; l < m.windowsize; l++){
-						pw.write(m.model[i][j][k][l] + "\t");
+						pw.write(m.model[j][i][k][l] + "\t");
 					}
 					pw.write("\n");
 			}

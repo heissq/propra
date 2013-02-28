@@ -49,9 +49,17 @@ public class Train {
 			//String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 			//String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
 			// TODO Auto-generated method stub
-			Gor1Model g = new Gor1Model();
-			g.train(p);
-			Useful.writemodelfile(filename, g);
+			
+			if(type == 3){
+				Gor3Model g = new Gor3Model();
+				g.train(p);
+				Useful.writemodelfile(filename, g);
+			}
+			else{
+				Gor1Model g = new Gor1Model();
+				g.train(p);
+				Useful.writemodelfile(filename, g);
+				}
 			}
 
 }
