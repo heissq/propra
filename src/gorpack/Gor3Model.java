@@ -219,4 +219,3 @@ public class Gor3Model {
 	
 }
 
-
