@@ -185,13 +185,14 @@ sub processSecChains {
 
     for my $i ( 0 .. $#hstart ) {
         my $chain = substr( $hchain, $i, 1 );
-        print "$i\n";
+        print "meine chain id : ",$chain,"\n";
+        print "meine helixstartindex : $i\n";
         my $tmpstr = $hash{$chain};
 
         print $tmpstr, "\n";
-        #$tmpstr = replaceChars($tmpstr,'H',$hstart[$i],$hend[$i]-$hstart[$i]+1);
-        $tmpstr =~ s/^(.{$hstart[$i]}).{$hend[$i]-$hstart[$i]+1}(.*)$/$1H$2/;
-        print ">>", $tmpstr, "\n";
+        $tmpstr = replaceChars($tmpstr,'H',$hstart[$i],$hend[$i]-$hstart[$i]+1);
+        #$tmpstr =~ s/^(.{$hstart[$i]}).{$hend[$i]-$hstart[$i]+1}(.*)$/$1H$2/;
+        print $tmpstr, " \n";
         for my $x ( $hstart[$i] - 1 .. $hend[$i] ) {
             $tmpstr = substr( $hash{$chain}, $x, 1, 'H' );
         }
