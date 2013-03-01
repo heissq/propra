@@ -30,19 +30,25 @@ public class CreateSummary {
 
 	public CreateSummary(String file, String id, String as, String ss, String ps, double q3,
 			double sov, double qh, double qe, double qc, double sov_h,
-			double sov_e, double sov_c) {
+			double sov_e, double sov_c, String filename) {
 		this.id = id;
 		this.q3 = q3;
 		this.sov = sov;
 		this.qh = qh;
 		this.qe = qe;
 		this.qc = qc;
-		this.sov_h = sov_h;
 		this.sov_e = sov_e;
 		this.sov_c = sov_c;
 		this.as = as;
 		this.ss = ss;
 		this.ps = ps;
+		this.filename = filename;
+	}
+
+	public CreateSummary(String id, String filename) {
+		super();
+		this.id = id;
+		this.filename = filename;
 	}
 
 	public void createFile() throws IOException {
