@@ -13,6 +13,7 @@ public class Predict {
 	/**
 	 * @param args
 	 */
+	//ssss
 	public final static int aa = 21;
 	public final static int windowsize = 17;
 	

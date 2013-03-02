@@ -1,6 +1,10 @@
 package gorpack;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
@@ -95,7 +99,6 @@ public class Useful {
 		br.close();
 		} catch(FileNotFoundException e){
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return out;
