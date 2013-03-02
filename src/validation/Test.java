@@ -1,5 +1,4 @@
 package validation;
-import gorpack.*;
 
 public class Test {
 
@@ -14,8 +13,6 @@ public class Test {
 		String string2 = "AAAAACCAACCAAAA";
 		String stringarray[][] = new String[10][2];
 		
-		Q3 testq3 = new Q3(string1, string2);
-		System.out.println(testq3.getResult());
 		// TODO read in file for Q3 validation
 	}
 }

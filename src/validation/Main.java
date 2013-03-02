@@ -96,10 +96,10 @@ public class Main {
 
 		// ausdrucken der elemente
 
-		System.out.println("warum");
-		System.out.println(dataset);
-		System.out.println("----------");
-		dataset.printeverything();
+		// System.out.println("warum");
+		// System.out.println(dataset);
+		// System.out.println("----------");
+		// dataset.printids();
+		dataset.calcQ3values();
 	}
-
 }

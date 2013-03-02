@@ -59,12 +59,19 @@ public class Data {
 
 	// hier die ergebnisse mit einfügen
 	public void addResult(double q3, double sov) {
+		if (result == null)
+			result = new Result();
 		result.setQ3(q3);
 		result.setSov(sov);
 	}
 
-	public void addResult(double q3) {
+	public void addResult(double q3, double qe, double qh, double qc) {
+		if (result == null)
+			result = new Result();
 		result.setQ3(q3);
+		result.setQh(qh);
+		result.setQc(qc);
+		result.setQe(qe);
 	}
 
 	public void addRS(String rs) {
@@ -77,8 +84,13 @@ public class Data {
 		// ist aber nur zu testzwecken also nicht zwingend nötig
 		return "ID: " + id + "\n" + "amino acid:\n" + as
 				+ "\nsecondary_structure:\n" + rs
-				+ "\npredicted secondary structure:\n" + ps
-				+ "\n------------------------\n";
+				+ "\npredicted secondary structure:\n" + ps;
+	}
+
+	public void calcQ3values() {
+		Q3 q = new Q3(rs,ps);
+		this.addResult(q.q3result, q.qeresult, q.qhresult, q.qcresult);
+		q.print();
 	}
 
 	// TODO es fehlen noch weitere arten des hinzufügens

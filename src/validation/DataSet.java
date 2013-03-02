@@ -17,6 +17,7 @@ public class DataSet {
 		dssp_filename = Main.dssp_file;
 	}
 
+
 	public void addInputChunk(String id, String rs, String ps, String as) {
 		if (!isempty) {
 			for (Data d : daten) {
@@ -41,20 +42,6 @@ public class DataSet {
 		daten.add(new Data(id, rs, ps, as));
 		isempty = false;
 	}
-	
-	public void addQ3Chunk(String id, double q3) {
-		for (Data d : daten) {
-			if (d.id == id) {
-				d.addResult(q3);
-				return;
-			}
-		}
-
-		// wenn nicht gefunden neues element anlegen
-		System.out.println("id nicht gefunden bitter erst anlegen");
-		// TODO case wenn id noch nicht vorhanden und strings etc erst angelegt
-		// werden müssen sollte lieber erst input haben bevor output
-	}
 
 	@Override
 	public String toString() {
@@ -65,6 +52,34 @@ public class DataSet {
 	public void printeverything() {
 		for (Data data : daten) {
 			System.out.println(data);
+			System.out.println();
+			System.out
+					.println("-------------------------------------------------------------");
+			System.out.println();
+		}
+	}
+
+	public void printids() {
+		for (Data data : daten) {
+			System.out.println(data.id);
+		}
+	}
+
+	public Data getDataFromId(String searchid) {
+		for (Data data : daten) {
+			if (data.id == searchid)
+				return data;
+		}
+		return null;
+	}
+
+	public int getListSize() {
+		return daten.size();
+	}
+
+	public void calcQ3values() {
+		for (Data data : daten) {
+			data.calcQ3values();
 		}
 	}
 }
