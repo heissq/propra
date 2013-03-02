@@ -36,6 +36,7 @@ public class Train {
 			switch(cmd.getOptionValue("method")){
 			case "gor1": type = 1;
 			case "gor3": type = 3;
+			case "gor4": type = 4;
 			}
 			} else {
 			System.out.println("Default Method Gor1 selected");
@@ -52,6 +53,11 @@ public class Train {
 			
 			if(type == 3){
 				Gor3Model g = new Gor3Model();
+				g.train(p);
+				Useful.writemodelfile(filename, g);
+			}
+			else if(type == 4){
+				Gor4Model g = new Gor4Model();
 				g.train(p);
 				Useful.writemodelfile(filename, g);
 			}

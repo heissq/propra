@@ -37,7 +37,7 @@ public class Gor1Model implements GorModel {
 	public static int[] summatrix(int[][][] mod){
 		int[] ct = new int[3];
 		for(int i = 0; i < nstates; i++){
-			for(int j = 0; j < naa; j++){
+			for(int j = 0; j < naa-1; j++){
 				for(int k = 0; k < windowsize; k++) {
 					ct[i] += mod[i][j][k];
 				}
@@ -48,10 +48,10 @@ public class Gor1Model implements GorModel {
 	
 	// Fills matrix according to training results
 	public void makematrix(int[][][] mod){
-		this.matrix = new double[nstates][naa][windowsize];
+		this.matrix = new double[nstates][naa-1][windowsize];
 		int[] summ = summatrix(mod);
 		for(int i = 0; i < nstates; i++){
-			for(int j = 0; j < naa; j++){
+			for(int j = 0; j < naa-1; j++){
 				for(int k = 0; k < windowsize; k++) {
 					this.matrix[i][j][k] =  Math.log((double)mod[i][j][k]/(mod[0][j][k] +
 							mod[1][j][k] + mod[2][j][k] - mod[i][j][k])) +  
@@ -95,9 +95,9 @@ public class Gor1Model implements GorModel {
 	public double[] prob(int[] ps, int pos){
 		double[] p = new double[4];
 		for(int i = 0; i < windowsize; i++){
-			p[0] += matrix[0][ps[pos+i-whalf]][i];
-			p[1] += matrix[1][ps[pos+i-whalf]][i];
-			p[2] += matrix[2][ps[pos+i-whalf]][i];
+			p[0] += (Math.exp(matrix[0][ps[pos+i-whalf]][i])/(1.0+Math.exp(matrix[0][ps[pos+i-whalf]][i])));
+			p[1] += (Math.exp(matrix[1][ps[pos+i-whalf]][i])/(1.0+Math.exp(matrix[1][ps[pos+i-whalf]][i])));
+			p[2] += (Math.exp(matrix[2][ps[pos+i-whalf]][i])/(1.0+Math.exp(matrix[2][ps[pos+i-whalf]][i])));
 		}
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
@@ -105,6 +105,21 @@ public class Gor1Model implements GorModel {
 		else p[3] = 3;
 		return p;
 	}
+	/*
+	//returns percent value 
+	public int[] prob2(int[] ps, int pos){
+		int[] perc = new int[3];
+		double[] p = new double[3];
+		for(int i = 0; i < windowsize; i++){
+			p[0] += Math.exp(matrix[0][ps[pos+i-whalf]][i]);
+			p[1] += Math.exp(matrix[1][ps[pos+i-whalf]][i]);
+			p[2] += Math.exp(matrix[2][ps[pos+i-whalf]][i]);
+		}
+		perc[0] = (int) ((double)p[0]/(p[1]+ p[2]+ p[0])*10);
+		perc[1] = (int) ((double)p[1]/(p[0]+ p[2]+ p[1])*10);
+		perc[2] = (int) ((double)p[2]/(p[1]+ p[0]+ p[2])*10);
+		return perc;
+	}*/
 	
 	public int[] predict(int[] ps){
 		int[] r = new int[ps.length];
@@ -120,7 +135,7 @@ public class Gor1Model implements GorModel {
 		
 		return r;
 	}
-	
+	/*
 	public int[][] predictProbs(int[] ps){
 		int[][] r = new int[3][ps.length];
 		for(int x = 0; x < whalf; x++){
@@ -133,24 +148,23 @@ public class Gor1Model implements GorModel {
 		}
 		for(int i = whalf; i < ps.length-whalf; i++){
 			double[] p = prob(ps, i);
-			r[0][i] = (int) p[0];
-			r[1][i] = (int) p[1];
-			r[2][i] = (int) p[2];
+			int[]probs = prob2(ps, i);
+			r[0][i] = probs[0];
+			r[1][i] = probs[1];
+			r[2][i] = probs[2];
 			//System.out.println("foobar");
 		}
 		
 		return r;
-	}
+	}*/
 	
 public String[] probabilities(int[] ps){
 		String[] r = new String[3];
 		for(int i = 8; i < ps.length-8; i++){
-		double[] p = prob(ps, i);
-			for(int j = 0; j < nstates; j++){
-			r[0] = r[0] + ((int) (p[0] / p[0]+p[1]+p[2]+p[3] * 4) + 5);
-			r[1] = r[1] + ((int) (p[1] / p[0]+p[1]+p[2]+p[3] * 4) + 5);
-			r[2] = r[2] + ((int) (p[2] / p[0]+p[1]+p[2]+p[3] * 4) + 5);
-		}
+			double[] p = prob(ps, i);
+			r[0] = r[0] + "" +(int)((p[0]-7)*10);
+			r[1] = r[1] + "" +(int)((p[1]-7)*10);
+			r[2] = r[2] + "" +(int)((p[2]-7)*10);
 		}
 		//System.out.println("foobar");
 		return r;
@@ -173,7 +187,7 @@ public String[] probabilities(int[] ps){
 		int[] num = predict(foo);
 		String[] probs = probabilities(foo);
 		//System.out.println(num[1]);
-		return "\n" + "PH" + probs[2] + "\n" + "PE" + probs[1] + "\n" + "PE" + probs[0] ;
+		return "\n" + "PH" + probs[2] + "\n" + "PE" + probs[1] + "\n" + "PC" + probs[0] ;
 	}
 	/*public int[][] predictProbs(String ps){
 		int[][] res = new int[3][ps.length()];
