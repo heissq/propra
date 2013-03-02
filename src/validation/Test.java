@@ -4,15 +4,15 @@ public class Test {
 
 	/**
 	 * @param args
-	 * test klasse zum debuggen etc.
 	 */
 	public static void main(String[] args) {
-		Segment[][] foo = SOV.makesegments("CCCCCCCHHHHH", "CCCHHHHHHHHC");
-		System.out.println(foo[0][0].c);
-		String string1 = "AAAAACCCCCCAAAA";
-		String string2 = "AAAAACCAACCAAAA";
-		String stringarray[][] = new String[10][2];
-		
-		// TODO read in file for Q3 validation
+		// TODO Auto-generated method stub
+		//Segment[][] foo = SOV.makesegments("CCCCCHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC");
+		//System.out.println(SOV.makesegments("CCCCCHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC")[1][3].start);
+		//System.out.println(SOV.delta((SOV.makesegments("EHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC")), 0,1));
+		//System.out.println(SOV.minov((SOV.makesegments("CCCCCHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC")), 0,1));
+		//System.out.println(SOV.overlaps(SOV.makesegments("CCCCEEHHHH", "CCCCEEHHHH"))[1][1].end);
+		System.out.println(SOV.overlaps("CCCCEEEHHEEHH", "CCCCEEEHHEEHH")[2][1].end);
+		//System.out.println(SOV.sov_value("CCCHHCEEEHHHH", "CCEECCEEEHHHH"));
 	}
 }

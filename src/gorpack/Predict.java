@@ -20,9 +20,8 @@ public class Predict {
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
 		// TODO Auto-generated method stub
 		//prim is generated
-		//reading does not work here. reading cmd works for train. 15:54
+		//everything fine
 		Options opt = new Options();
-		//Gor1Model g = new Gor1Model();
 		opt.addOption("", "probabilities", true, "Print Probabilities?");
 		opt.addOption("", "model", true, "The model file to be used");
 		opt.addOption("", "format", true, "The output format");
@@ -31,64 +30,81 @@ public class Predict {
 		CommandLine cmd = parser.parse(opt, args);
 		String topred = "";
 		String filename = "";
+		boolean html = false;
 		boolean probs = false;
-		//String topred = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
-		//String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
-		//String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
+		
 		if(cmd.hasOption("probabilities")){
 			probs = true;
 		} else {
-			System.out.println("Dont need this");
+			System.out.println("What's this?");
 		}
+		
 		if(cmd.hasOption("model")){
 			filename = cmd.getOptionValue("model");
-		
 		} else {
 			System.out.println("Y U no select model");
 		}
+		
 		if(cmd.hasOption("format")){
+			if(cmd.getOptionValue("format").equals("html")) html = true;
 		} else {
-			System.out.println("Dont need format");
+			System.out.println("Aint nobody got time fo' dat");
 		}
+		
 		if(cmd.hasOption("seq")){
 			topred = cmd.getOptionValue("seq");
 		} else {
 			System.out.println("U stupid?");
 		}
+		
 		int type = Useful.type(filename);
-		//System.out.println(filename+topred);
 		Sequence[] prim = Useful.filetosequence(topred);
-		//System.out.println(prim[2].getps());
 		Sequence p = new Sequence();
+		String reality = "";
 		String probabilities = "";
-		if(type == 4) {
-		Gor3Model g = new Gor3Model();
-		int[][][][] modelarr = Useful.read3model(filename);
-		g.setmodel(modelarr);
-		g.makematrix(modelarr);
-		String prediction = g.predictString(prim[0].getps());
-		p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
-		} else {
-		Gor1Model g = new Gor1Model();
-		int[][][] modelarr = Useful.readmodel(filename);
-		g.setmodel(modelarr);
-		g.makematrix(modelarr);
-		String prediction = g.predictString(prim[0].getps());
-		probabilities = g.predictStringProbs(prim[0].getps());
-		p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		if(type == 6){
+			Gor4Model g = new Gor4Model();
+			int[][][][][][] modelarr = Useful.read4model(filename);
+			g.setmodel(modelarr);
+			String prediction = g.predictString(prim[0].getps());
+			reality = prim[0].getss();
+			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
 		}
-		//System.out.println(modelarr[0][0][0]);
-		//g.setmodel(modelarr);
-		//g.makematrix(modelarr);
-		//System.out.println(prim[0].getps());
-		//System.out.println(prediction);
+		else if(type == 4) {
+			Gor3Model g = new Gor3Model();
+			int[][][][] modelarr = Useful.read3model(filename);
+			g.setmodel(modelarr);
+			g.makematrix(modelarr);
+			String prediction = g.predictString(prim[0].getps());
+			reality = prim[0].getss();
+			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		} else {
+			Gor1Model g = new Gor1Model();
+			int[][][] modelarr = Useful.readmodel(filename);
+			g.setmodel(modelarr);
+			g.makematrix(modelarr);
+			String prediction = g.predictString(prim[0].getps());
+			reality = prim[0].getss();
+			probabilities = g.predictStringProbs(prim[0].getps());
+			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+		}
 		//String[] pvalues = g.predictProbsString(prim[0].getps());
+		String content = Useful.htmlstring(p) + "" + "RS --------"+ reality.substring(8, reality.length()-8) + "--------";
 		
 		if(probs){
+		content = content + probabilities;
 		System.out.println(Useful.makefastastring(p) + probabilities);
 			//System.out.println(Useful.makefastastring(p, pvalues));
-		} else {
-		System.out.println(Useful.makefastastring(p));
 		}
+		
+		if(!html) {
+		System.out.print(Useful.makefastastring(p));
+		System.out.println("RS --------"+ reality.substring(8, reality.length()-8) + "--------");
+		}
+		else if(html){
+			System.out.println("<html><head><title>Secondary Structure Prediction</title></head>");
+			System.out.println("<body><h1>"+content+"</h1></body></html>");
+		}
+		
 	}
 }
