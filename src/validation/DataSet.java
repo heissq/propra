@@ -105,4 +105,13 @@ public class DataSet {
 				data.printSegments();
 		}
 	}
+	
+	//whole data return
+	public ArrayList<Data> getDataPackage() {
+		ArrayList<Data> tmp = new ArrayList<>();
+		for (Data data : daten) {
+			tmp.add(data);
+		}
+		return tmp;
+	}
 }

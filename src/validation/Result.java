@@ -1,5 +1,7 @@
 package validation;
 
+import java.lang.ProcessBuilder.Redirect;
+
 public class Result {
 	// parameters to calculate:
 	private double q3 = -1;
@@ -87,6 +89,4 @@ public class Result {
 	public void setSov_c(double sov_c) {
 		this.sov_c = sov_c;
 	}
-
-	// TODO mehrere Konstruktoren für verschiedene Anwendungen
 }

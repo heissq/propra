@@ -78,6 +78,8 @@ public class Data {
 		result.setQc(qc);
 		result.setQe(qe);
 	}
+	
+	
 
 	public void addRS(String rs) {
 		this.rs = rs;

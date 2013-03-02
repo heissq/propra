@@ -110,12 +110,14 @@ public class Main {
 		// ausdrucken der elemente
 
 		// System.out.println("warum");
-		// System.out.println(dataset);
+//		 System.out.println(dataset);
 		// System.out.println("----------");
 		
-		// dataset.printids();
+//		 dataset.printids();
 		
 		dataset.calcQ3values();
 		dataset.calcSOVvalues();
+		dataset.printSegmentByPDBId("12asA00");
+//		dataset.printeverything();
 	}
 }
