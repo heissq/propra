@@ -42,6 +42,7 @@ public class ReadFromFiles {
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
+			System.out.println("Datei:"+file+" nicht gefunden.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

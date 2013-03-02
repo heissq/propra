@@ -9,11 +9,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 public class Main {
-	public static String predictions_file = "predictions.txt";
-	public static String dssp_file = "dssp.txt";
-	public static String summary_file = "summary.txt";
-	public static String detailed_file = "detailed_summary.txt";
-	public static DataSet dataset = new DataSet();
+	public static String predictions_file;
+	public static String dssp_file;
+	public static String summary_file;
+	public static String detailed_file;
+	public static DataSet dataset;
+	public static int iterations_cross_validation;
 
 	/**
 	 * @param args
@@ -22,11 +23,13 @@ public class Main {
 	 */
 	public static void main(String[] args) throws ParseException,
 			FileNotFoundException {
-		// variablen für optionen:
+//		 variablen für optionen:
 		String predictions_file = "predictions.txt";
 		String dssp_file = "dssp.txt";
 		String summary_file = "summary.txt";
 		String detailed_file = "detailed_summary.txt";
+		int iterations_cross_validation = 10;
+		DataSet dataset = new DataSet();
 
 		Options opt = new Options();
 		opt.addOption("", "p", true, "<predictions>");
@@ -34,6 +37,7 @@ public class Main {
 		opt.addOption("", "f", true, "<txt|html>");
 		opt.addOption("", "s", true, "<summary file>");
 		opt.addOption("", "d", true, "<detailed file>");
+		opt.addOption("", "cross-validation", true, "<cross-validation>");
 
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = parser.parse(opt, args);
@@ -62,6 +66,15 @@ public class Main {
 			System.out
 					.println("Default value = detailed_summary.html/detailed_summary.txt");
 		}
+		
+		//cross validation parameter
+		if (cmd.hasOption("cross-validation")) {
+			iterations_cross_validation = Integer.parseInt(cmd.getOptionValue("cross-validation"));
+			System.out.println(iterations_cross_validation);
+		} else {
+			System.out
+			.println("Default value = 10");
+		}
 
 		// summary file
 		if (cmd.hasOption("s")) {
@@ -75,16 +88,16 @@ public class Main {
 			switch (cmd.getOptionValue("f")) {
 			// TODO noch option für mehrere
 			// quirin fragen
-			case "txt":
-				break;
-			case "txt:":
-				break;
 			case "html":
+				detailed_file = detailed_file.replaceAll(".txt", ".html");
+				System.out.println(detailed_file+";"+summary_file);
 				break;
 			case "html:":
+				detailed_file = detailed_file.replaceAll(".txt", ".html");
+				System.out.println(detailed_file+";"+summary_file);
 				break;
 			default:
-				System.out.println("default value");
+				System.out.println("Default Value = "+detailed_file+";"+summary_file);
 				break;
 			}
 		} else {
@@ -99,7 +112,10 @@ public class Main {
 		// System.out.println("warum");
 		// System.out.println(dataset);
 		// System.out.println("----------");
+		
 		// dataset.printids();
+		
 		dataset.calcQ3values();
+		dataset.calcSOVvalues();
 	}
 }

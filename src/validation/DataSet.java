@@ -16,12 +16,16 @@ public class DataSet {
 		predictions_filename = Main.predictions_file;
 		dssp_filename = Main.dssp_file;
 	}
-
+	
+	public void setFiles(String pred,String dssp) {
+		predictions_filename = pred;
+		dssp_filename = dssp;
+	}
 
 	public void addInputChunk(String id, String rs, String ps, String as) {
 		if (!isempty) {
 			for (Data d : daten) {
-				if (d.id == id) {
+				if (d.pdbid == id) {
 					// TODO prüfen ob daten richtig noch nicht wirklich
 					// implementiert...
 					if (d.getAs().isEmpty()) {
@@ -61,13 +65,13 @@ public class DataSet {
 
 	public void printids() {
 		for (Data data : daten) {
-			System.out.println(data.id);
+			System.out.println(data.pdbid);
 		}
 	}
-
-	public Data getDataFromId(String searchid) {
+	
+	public Data getDataFromPDBId(String pdbid) {
 		for (Data data : daten) {
-			if (data.id == searchid)
+			if (data.pdbid.equals(pdbid))
 				return data;
 		}
 		return null;
@@ -80,6 +84,25 @@ public class DataSet {
 	public void calcQ3values() {
 		for (Data data : daten) {
 			data.calcQ3values();
+		}
+	}
+
+	public void calcSOVvalues() {
+		for (Data data : daten) {
+			data.calcSOVvalues();
+		}
+	}
+
+	public void printSegments() {
+		for (Data data : daten) {
+			data.printSegments();
+		}
+	}
+
+	public void printSegmentByPDBId(String pdbid) {
+		for (Data data : daten) {
+			if (data.pdbid.equals(pdbid))
+				data.printSegments();
 		}
 	}
 }
