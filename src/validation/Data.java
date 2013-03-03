@@ -63,7 +63,12 @@ public class Data {
 		this.ps = ps;
 		this.as = as;
 		result = new Result();
-		calcSOVvalues();
+
+		int count = 0;
+		while (ps.charAt(count) == '-') {
+			count++;
+		}
+		calcSOVvalues(count);
 		calcQ3values();
 	}
 
@@ -75,7 +80,7 @@ public class Data {
 		result.sov = sov;
 	}
 
-	public void addResult(double q3, double qe, double qh, double qc) {
+	public void addResult(double q3, double qh, double qe, double qc) {
 		if (result == null)
 			result = new Result();
 		result.q3 = q3;
@@ -99,12 +104,12 @@ public class Data {
 
 	public void calcQ3values() {
 		Q3 q = new Q3(rs, ps);
-		this.addResult(q.q3result, q.qeresult, q.qhresult, q.qcresult);
+		this.addResult(q.q3result, q.qhresult, q.qeresult, q.qcresult);
 	}
 
 	public void printQ3() {
 		String br = "-----------------------------------------------------------------";
-		DecimalFormat df = new DecimalFormat("#.####");
+		DecimalFormat df = new DecimalFormat("#.###");
 		System.out.println(br);
 		System.out.println("|\tQ3\t|\tQH\t|\tQE\t|\tQC\t|");
 		System.out.println("|\t" + df.format(result.q3) + "\t|\t"
@@ -115,11 +120,11 @@ public class Data {
 
 	}
 
-	public void calcSegments() {
+	public void calcSegments(int windowsize) {
 		// observed segments
 		char lastc = 'X';
 		Segment tmp = null;
-		for (int i = 0; i < rs.length(); i++) {
+		for (int i = windowsize; i < rs.length() - windowsize; i++) {
 			if (lastc != rs.charAt(i))
 			{
 				if (lastc != 'X')
@@ -131,14 +136,14 @@ public class Data {
 				
 			// nun speichern des letzten chars..
 			lastc = rs.charAt(i);
-			if (i == rs.length()-1)
+			if (i == rs.length() - 1 - windowsize)
 				observed_segments.add(tmp);
 		}
 		
 		// predicted segments
 		lastc = 'X';
 		tmp = null;
-		for (int i = 0; i < ps.length(); i++) {
+		for (int i = windowsize; i < ps.length() - windowsize; i++) {
 			if (lastc != ps.charAt(i))
 			{
 				if (lastc != 'X')
@@ -151,10 +156,11 @@ public class Data {
 
 			// nun speichern des letzten chars..
 			lastc = ps.charAt(i);
-			if (i == rs.length()-1)
+			if (i == rs.length() - 1 - windowsize)
 				predicted_segments.add(tmp);
 		}
-		deleteHyphenSegments();
+		// deleteHyphenSegments();
+		// deleteObsSegmentsOppositeofHyphens();
 		calcDoubleSegments();
 		calcNonOverlapSegments();
 	}	
@@ -181,14 +187,21 @@ public class Data {
 		}
 	}
 
-	public void calcSOVvalues() {
-		calcSegments();
+	public void calcSOVvalues(int windowsize) {
+		calcSegments(windowsize);
 		SOV sov = new SOV(dbl_segments, nonoverlapping_segments);
 		result.sov = sov.resultscore;
 	}
 
 	public void printSOVscore() {
-		System.out.println();
+		String br = "-----------------------------------------------------------------";
+		DecimalFormat df = new DecimalFormat("#.###");
+		System.out.println(br);
+		System.out.println("|\tSOV\t|\tSOVH\t|\tSOVE\t|\tSOVC\t|");
+		System.out.println("|\t" + df.format(result.sov) + "\t|\t"
+				+ df.format(result.sov_h) + "\t|\t" + df.format(result.sov_e)
+				+ "\t|\t" + df.format(result.sov_c) + "\t|");
+		System.out.println(br);
 	}
 
 	public void calcDoubleSegments() {
@@ -255,6 +268,29 @@ public class Data {
 			predicted_segments.remove(predicted_segments.size() - 1);
 	}
 
+	public void deleteObsSegmentsOppositeofHyphens() {
+		int len = observed_segments.size();
+		int windowsize = 8;
+		int size = len > windowsize ? windowsize : len;
+
+		// erste elemente
+		for (int i = 0; i < (len > windowsize ? windowsize : len); i++) {
+			Segment obs = observed_segments.get(i);
+			if (obs.endpos < windowsize) {
+				observed_segments.remove(i);
+				len = observed_segments.size();
+			}
+		}
+
+		// letzte elemente
+		for (int i = len - 1; i > (len > windowsize ? len - windowsize : len); i--) {
+			Segment obs = observed_segments.get(i);
+			if (obs.startpos > len - (windowsize + 1)) {
+				observed_segments.remove(i);
+				len = observed_segments.size();
+			}
+		}
+	}
 	// ArrayList für nonoverlapping segments
 	public void calcNonOverlapSegments() {
 		for (Segment seg : observed_segments) {

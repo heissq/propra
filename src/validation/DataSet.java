@@ -88,9 +88,16 @@ public class DataSet {
 		}
 	}
 
-	public void calcSOVvalues() {
+	/**
+	 * parameter model mit einbezogen zur kalkulation
+	 * 
+	 * @param windowsize
+	 *            ist gleich der hälfte von windowsize-1 z.B 17 windowsize (1xAA
+	 *            + 16xAA) = 17-1 = 16/2 = 8
+	 */
+	public void calcSOVvalues(int windowsize) {
 		for (Data data : daten) {
-			data.calcSOVvalues();
+			data.calcSOVvalues(windowsize);
 		}
 	}
 
