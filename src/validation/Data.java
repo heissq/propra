@@ -102,7 +102,6 @@ public class Data {
 		System.out.println(result);
 	}
 
-	//FIXME glaube nicht vollständiges letztes segment für jede sequenz
 	public void calcSegments() {
 		// observed segments
 		char lastc = 'X';
@@ -119,6 +118,8 @@ public class Data {
 				
 			// nun speichern des letzten chars..
 			lastc = rs.charAt(i);
+			if (i == rs.length()-1)
+				observed_segments.add(tmp);
 		}
 		
 		// predicted segments
@@ -137,10 +138,13 @@ public class Data {
 
 			// nun speichern des letzten chars..
 			lastc = ps.charAt(i);
+			if (i == rs.length()-1)
+				predicted_segments.add(tmp);
 		}
+		deleteHyphenSegments();
+		calcDoubleSegments();
 	}	
 	
-	//TODO doublesegments fehlen noch
 	public void printSegments() {
 		System.out.println("Segments of observed:");
 		for (Segment sobs : observed_segments) {
@@ -151,10 +155,75 @@ public class Data {
 		for (Segment pobs : predicted_segments) {
 			System.out.println(pobs.id+";"+pobs.ch+";"+pobs.startpos+";"+pobs.endpos);
 		}
+
+		System.out.println("Segments double:");
+		for (DoubleSegment dbseg : dbl_segments) {
+			System.out.println(dbseg.id);
+			System.out.println(dbseg.observed.id + ";" + dbseg.observed.ch
+					+ ";" + dbseg.observed.startpos + ";"
+					+ dbseg.observed.endpos);
+			System.out.println(dbseg.predicted.id + ";" + dbseg.predicted.ch
+					+ ";" + dbseg.predicted.startpos + ";"
+					+ dbseg.predicted.endpos);
+		}
 	}
 
 	public void calcSOVvalues() {
 		// TODO Auto-generated method stub
 		calcSegments();
+	}
+
+	public void calcDoubleSegments() {
+		int i = 0;
+		int lastindex = 0;
+		for (int j = 0; j < observed_segments.size(); j++) {
+			Segment obsseg = observed_segments.get(j);
+			for (i = lastindex; i < predicted_segments.size(); i++) {
+				Segment tmp = predicted_segments.get(i);
+				if (obsseg.startpos <= tmp.endpos
+						&& obsseg.startpos >= tmp.startpos
+						&& obsseg.ch == tmp.ch) {
+
+					// segment predicted links
+					int identity = obsseg.startpos * tmp.startpos;
+					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
+
+					// lastindex um position für nächsten obsseg segment zu
+					// speichern und nicht wieder durch alle elemente davor
+					// durchiterieren
+					lastindex = i;
+				} else if (obsseg.endpos >= tmp.startpos
+						&& obsseg.endpos <= tmp.endpos && obsseg.ch == tmp.ch) {
+
+					// segment predicted rechts
+					int identity = obsseg.startpos * tmp.startpos;
+					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
+
+					// lastindex
+					lastindex = i;
+				} else if (obsseg.startpos <= tmp.startpos
+						&& obsseg.endpos >= tmp.endpos && obsseg.ch == tmp.ch) {
+
+					// segment innerhalb
+					int identity = obsseg.startpos * tmp.startpos;
+					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
+				}
+
+				// in while schöner... dennoch zu faul das jetzt umzuändern
+				if (obsseg.endpos < tmp.startpos)
+					i = predicted_segments.size() + 1;
+			}
+		}
+	}
+
+	// segmente mit bindestrich nur vorne und hinten entfernen
+	public void deleteHyphenSegments() {
+		// erstes element
+		if (predicted_segments.get(0).ch == '-')
+			predicted_segments.remove(0);
+
+		// letztes element
+		if (predicted_segments.get(predicted_segments.size() - 1).ch == '-')
+			predicted_segments.remove(predicted_segments.size() - 1);
 	}
 }

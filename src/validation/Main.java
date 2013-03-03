@@ -86,8 +86,6 @@ public class Main {
 
 		if (cmd.hasOption("f")) {
 			switch (cmd.getOptionValue("f")) {
-			// TODO noch option für mehrere
-			// quirin fragen
 			case "html":
 				detailed_file = detailed_file.replaceAll(".txt", ".html");
 				System.out.println(detailed_file+";"+summary_file);

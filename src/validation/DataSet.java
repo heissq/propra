@@ -25,9 +25,10 @@ public class DataSet {
 	public void addInputChunk(String id, String rs, String ps, String as) {
 		if (!isempty) {
 			for (Data d : daten) {
-				if (d.pdbid == id) {
+				if (d.pdbid.equals(id)) {
 					// TODO prüfen ob daten richtig noch nicht wirklich
-					// implementiert...
+					// implementiert... also ob sequenz aa_seq mit der schon
+					// gespeicherten auch übereinstimmt
 					if (d.getAs().isEmpty()) {
 						d.setAs(as);
 					}

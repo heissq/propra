@@ -4,8 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import gorpack.*;
-
 public class CreateSummary {
 	// id
 	private String id = "";
@@ -13,7 +11,7 @@ public class CreateSummary {
 	// parameter to validate:
 	private double q3 = -1;
 	private double sov = -1;
-	private double qh = -1; // TODO die drei q dinger berechnen
+	private double qh = -1;
 	private double qe = -1;
 	private double qc = -1;
 	private double sov_h = -1;
@@ -52,7 +50,7 @@ public class CreateSummary {
 	}
 
 	public void createFile() throws IOException {
-		try { // TODO format richtig ansetzen --> frage wie viele sequenzen?
+		try {
 				// Create file
 			FileWriter fstream = new FileWriter(filename);
 			BufferedWriter out = new BufferedWriter(fstream);
