@@ -113,9 +113,7 @@ public class Main {
 		
 //		 dataset.printids();
 		
-		dataset.calcQ3values();
-		dataset.calcSOVvalues();
-		dataset.printSegmentByPDBId("12asA00");
+		dataset.printDataByPDBId("12asA00");
 //		dataset.printeverything();
 	}
 }

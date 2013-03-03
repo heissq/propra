@@ -115,4 +115,11 @@ public class DataSet {
 		}
 		return tmp;
 	}
+
+	public void printDataByPDBId(String pdbid) {
+		for (Data data : daten) {
+			if (data.pdbid.equals(pdbid))
+				data.printeverything();
+		}
+	}
 }

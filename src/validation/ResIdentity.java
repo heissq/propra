@@ -6,7 +6,6 @@ public class ResIdentity {
 	public int shuffle_set_iteration;
 	
 	public ResIdentity() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public ResIdentity(String pdbid, int iteration, int shuffle_set_iteration) {

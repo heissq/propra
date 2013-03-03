@@ -21,4 +21,10 @@ public class DoubleSegment {
 		predicted=pred;
 		this.id = id;
 	}
+
+	@Override
+	public String toString() {
+		String br = "\n-------------------------------------------------\n";
+		return id + br + observed + br + predicted + br;
+	}
 }

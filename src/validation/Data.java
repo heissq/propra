@@ -1,5 +1,6 @@
 package validation;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Data {
@@ -16,6 +17,7 @@ public class Data {
 	private ArrayList<Segment> observed_segments = new ArrayList<>();
 	private ArrayList<Segment> predicted_segments = new ArrayList<>();
 	private ArrayList<DoubleSegment> dbl_segments = new ArrayList<>();
+	private ArrayList<Segment> nonoverlapping_segments = new ArrayList<>();
 
 	public String getRs() {
 		return rs;
@@ -60,27 +62,28 @@ public class Data {
 		this.rs = rs;
 		this.ps = ps;
 		this.as = as;
+		result = new Result();
+		calcSOVvalues();
+		calcQ3values();
 	}
 
 	// hier die ergebnisse mit einfügen
 	public void addResult(double q3, double sov) {
 		if (result == null)
 			result = new Result();
-		result.setQ3(q3);
-		result.setSov(sov);
+		result.q3 = q3;
+		result.sov = sov;
 	}
 
 	public void addResult(double q3, double qe, double qh, double qc) {
 		if (result == null)
 			result = new Result();
-		result.setQ3(q3);
-		result.setQh(qh);
-		result.setQc(qc);
-		result.setQe(qe);
+		result.q3 = q3;
+		result.qh = qh;
+		result.qe = qe;
+		result.qc = qc;
 	}
 	
-	
-
 	public void addRS(String rs) {
 		this.rs = rs;
 	}
@@ -98,8 +101,18 @@ public class Data {
 		Q3 q = new Q3(rs, ps);
 		this.addResult(q.q3result, q.qeresult, q.qhresult, q.qcresult);
 	}
+
 	public void printQ3() {
-		System.out.println(result);
+		String br = "-----------------------------------------------------------------";
+		DecimalFormat df = new DecimalFormat("#.####");
+		System.out.println(br);
+		System.out.println("|\tQ3\t|\tQH\t|\tQE\t|\tQC\t|");
+		System.out.println("|\t" + df.format(result.q3) + "\t|\t"
+				+ df.format(result.qh) + "\t|\t"
+ + df.format(result.qe) + "\t|\t"
+ + df.format(result.qc) + "\t|");
+		System.out.println(br);
+
 	}
 
 	public void calcSegments() {
@@ -143,34 +156,39 @@ public class Data {
 		}
 		deleteHyphenSegments();
 		calcDoubleSegments();
+		calcNonOverlapSegments();
 	}	
 	
 	public void printSegments() {
 		System.out.println("Segments of observed:");
 		for (Segment sobs : observed_segments) {
-			System.out.println(sobs.id+";"+sobs.ch+";"+sobs.startpos+";"+sobs.endpos);
+			System.out.println(sobs);
 		}
 		
 		System.out.println("Segments of predicted:");
 		for (Segment pobs : predicted_segments) {
-			System.out.println(pobs.id+";"+pobs.ch+";"+pobs.startpos+";"+pobs.endpos);
+			System.out.println(pobs);
 		}
 
 		System.out.println("Segments double:");
 		for (DoubleSegment dbseg : dbl_segments) {
-			System.out.println(dbseg.id);
-			System.out.println(dbseg.observed.id + ";" + dbseg.observed.ch
-					+ ";" + dbseg.observed.startpos + ";"
-					+ dbseg.observed.endpos);
-			System.out.println(dbseg.predicted.id + ";" + dbseg.predicted.ch
-					+ ";" + dbseg.predicted.startpos + ";"
-					+ dbseg.predicted.endpos);
+			System.out.println(dbseg);
+		}
+
+		System.out.println("non overlapping Segments in observed sequence:");
+		for (Segment seg : nonoverlapping_segments) {
+			System.out.println(seg);
 		}
 	}
 
 	public void calcSOVvalues() {
-		// TODO Auto-generated method stub
 		calcSegments();
+		SOV sov = new SOV(dbl_segments, nonoverlapping_segments);
+		result.sov = sov.resultscore;
+	}
+
+	public void printSOVscore() {
+		System.out.println();
 	}
 
 	public void calcDoubleSegments() {
@@ -187,24 +205,34 @@ public class Data {
 					// segment predicted links
 					int identity = obsseg.startpos * tmp.startpos;
 					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
+					obsseg.overlap = true;
 
 					// lastindex um position für nächsten obsseg segment zu
 					// speichern und nicht wieder durch alle elemente davor
 					// durchiterieren
-					lastindex = i;
+					lastindex = i + 1;
 				} else if (obsseg.endpos >= tmp.startpos
 						&& obsseg.endpos <= tmp.endpos && obsseg.ch == tmp.ch) {
 
 					// segment predicted rechts
 					int identity = obsseg.startpos * tmp.startpos;
 					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
+					obsseg.overlap = true;
 
 					// lastindex
-					lastindex = i;
+					lastindex = i + 1;
 				} else if (obsseg.startpos <= tmp.startpos
 						&& obsseg.endpos >= tmp.endpos && obsseg.ch == tmp.ch) {
+					obsseg.overlap = true;
 
 					// segment innerhalb
+					int identity = obsseg.startpos * tmp.startpos;
+					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
+				} else if (obsseg.startpos > tmp.startpos
+						&& obsseg.endpos < tmp.endpos) {
+					obsseg.overlap = true;
+
+					// segment alles
 					int identity = obsseg.startpos * tmp.startpos;
 					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
 				}
@@ -225,5 +253,25 @@ public class Data {
 		// letztes element
 		if (predicted_segments.get(predicted_segments.size() - 1).ch == '-')
 			predicted_segments.remove(predicted_segments.size() - 1);
+	}
+
+	// ArrayList für nonoverlapping segments
+	public void calcNonOverlapSegments() {
+		for (Segment seg : observed_segments) {
+			if (!seg.overlap)
+				nonoverlapping_segments.add(seg);
+		}
+	}
+
+	public void printeverything() {
+		System.out.println(pdbid);
+		System.out.println("AS " + as);
+		System.out.println("RS " + rs);
+		System.out.println("PS " + ps);
+		printSegments();
+		if (result.sov != -1)
+			printSOVscore();
+		if (result.q3 != -1)
+			printQ3();
 	}
 }
