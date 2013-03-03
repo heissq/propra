@@ -113,7 +113,7 @@ public class Main {
 		
 //		 dataset.printids();
 		
-		dataset.printDataByPDBId("1a2vA03");
+		dataset.printDataByPDBId("1a0sP00");
 //		dataset.printeverything();
 	}
 }

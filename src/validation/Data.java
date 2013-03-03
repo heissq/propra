@@ -109,7 +109,7 @@ public class Data {
 
 	public void printQ3() {
 		String br = "-----------------------------------------------------------------";
-		DecimalFormat df = new DecimalFormat("#.###");
+		DecimalFormat df = new DecimalFormat("##.###");
 		System.out.println(br);
 		System.out.println("|\tQ3\t|\tQH\t|\tQE\t|\tQC\t|");
 		System.out.println("|\t" + df.format(result.q3) + "\t|\t"
@@ -191,11 +191,14 @@ public class Data {
 		calcSegments(windowsize);
 		SOV sov = new SOV(dbl_segments, nonoverlapping_segments);
 		result.sov = sov.resultscore;
+		result.sov_h = sov.sov_h;
+		result.sov_e = sov.sov_e;
+		result.sov_c = sov.sov_c;
 	}
 
 	public void printSOVscore() {
 		String br = "-----------------------------------------------------------------";
-		DecimalFormat df = new DecimalFormat("#.###");
+		DecimalFormat df = new DecimalFormat("##.###");
 		System.out.println(br);
 		System.out.println("|\tSOV\t|\tSOVH\t|\tSOVE\t|\tSOVC\t|");
 		System.out.println("|\t" + df.format(result.sov) + "\t|\t"
