@@ -108,7 +108,7 @@ public class Main {
 //		 dataset.printids();
 		
 //		dataset.printeverything();
-		dataset.printDataByPDBId("11asB00");
+//		dataset.printDataByPDBId("11asB00");
 		ArrayList<Data> data_package = dataset.getDataPackage();
 		
 		CreateSummary csum = new CreateSummary("example",detailed_file);

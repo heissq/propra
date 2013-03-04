@@ -124,7 +124,6 @@ public class Useful {
 				String foo = line.substring(tr);
 				out[ct].setid(foo);}
 			else if(line.startsWith("AS")) {
-				
 				String foo = line.substring(3);
 				out[ct].setps(foo);}
 			else if(line.startsWith("SS")) {
@@ -350,7 +349,40 @@ public class Useful {
 			result = result + "PS " + c + "<br>";
 			return result;
 		}
-	
+		public static String[] makefastastring(Sequence[] s){
+			String[] result = new String[10000];
+			for(int i = 0; i < s.length; i++){
+				if(s[i].getid().equals("foo")) i = s.length;
+				else{
+					String a = s[i].getid();
+					String b = s[i].getps();
+					String c = s[i].getss();
+					result[i] = result  + a + "\n";
+					result[i] = result + "AS " + b + "\n";
+					result[i] = result + "PS " + c + "\n";
+				}
+					
+			}
+			return result;
+		}
+		//takes sequence, makes FASTA format output
+			public static String[] htmlstring(Sequence[] s){
+				String[] result = new String[10000];
+				for(int i = 0; i < s.length; i++){
+					if(s[i].getid().equals("foo")) i = s.length;
+					else{
+						String a = s[i].getid();
+						String b = s[i].getps();
+						String c = s[i].getss();
+						result[i] = result  + a + "<br>";
+						result[i] = result + "AS " + b + "<br>";
+						result[i] = result + "PS " + c + "<br>";
+					}
+						
+				}
+				return result;
+			}
+		
 	/*public static String makefastastring(Sequence s, String[]pr){
 		String result = "";
 		String a = s.getid();

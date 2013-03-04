@@ -58,52 +58,77 @@ public class Predict {
 		
 		int type = Useful.type(filename);
 		Sequence[] prim = Useful.filetosequence(topred);
-		Sequence p = new Sequence();
-		String reality = "";
-		String probabilities = "";
-		String probabilitiesHtml = "";
+		for(int i = 0; i < 10000; i++){
+			if(Useful.filetosequence(topred)[i] == null || Useful.filetosequence(topred)[i].getid().equals("foo")) i = 10000;
+			else prim[i] = Useful.filetosequence(topred)[i];
+		}
+		Sequence[] p = new Sequence[10000];
+		for(int i = 0; i < 10000; i++){
+			p[i] = new Sequence();
+		}
+		String[] reality = new String[10000];
+		String[] probabilities = new String[10000];
+		String[] probabilitiesHtml =new String[10000];
+		String[] prediction = new String[10000];
 		if(type == 4) {
 			Gor3Model g = new Gor3Model();
 			int[][][][] modelarr = Useful.read3model(filename);
 			g.setmodel(modelarr);
 			g.makematrix(modelarr);
-			String prediction = g.predictString(prim[0].getps());
-			reality = prim[0].getss();
-			probabilities = g.predictStringProbs(prim[0].getps());
-			probabilitiesHtml = g.predictStringProbsHtml(prim[0].getps());
-			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+			for(int i = 0; i < 10000; i ++){
+				if(prim[i].getid() == "foo") i = 10000;
+				else {
+					prediction[i] = g.predictString(prim[i].getps());
+					reality[i] = prim[i].getss();
+					probabilities[i] = g.predictString(prim[0].getps());
+					probabilitiesHtml[i] = g.predictStringProbs(prim[0].getps());
+					p[i] = new Sequence(prim[i].getid(), prim[i].getps(), prediction[i]);
+				}
+			}
 		} else {
 			Gor1Model g = new Gor1Model();
 			int[][][] modelarr = Useful.readmodel(filename);
 			g.setmodel(modelarr);
 			g.makematrix(modelarr);
-			String prediction = g.predictString(prim[0].getps());
-			reality = prim[0].getss();
-			probabilities = g.predictStringProbs(prim[0].getps());
-			probabilitiesHtml = g.predictStringProbsHtml(prim[0].getps());
-			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
+			for(int i = 0; i < 10000; i ++){
+				if(prim[i].getid() == "foo") i = 10000;
+				else {
+					prediction[i] = g.predictString(prim[i].getps());
+					reality[i] = prim[i].getss();
+					probabilities[i] = g.predictString(prim[0].getps());
+					probabilitiesHtml[i] = g.predictStringProbs(prim[0].getps());
+					p[i] = new Sequence(prim[i].getid(), prim[i].getps(), prediction[i]);
+				}
+			}
 		}
 		//String[] pvalues = g.predictProbsString(prim[0].getps());
 		String content = "";
-		if(reality.length() < 17){
-			content = Useful.htmlstring(p);
-		}
-		else {
-		content = Useful.htmlstring(p) + "" + "RS --------"+ reality.substring(8, reality.length()-8) + "--------";
-		} 
-		String content2 = Useful.htmlstring(p) + probabilitiesHtml;
-
-		if(probs && !html){
-		content = content + probabilities;
-		System.out.println(Useful.makefastastring(p) + probabilities);
-			//System.out.println(Useful.makefastastring(p, pvalues));
-		}
-		else if(!probs && !html) {
-		System.out.print(Useful.makefastastring(p));
-		System.out.println("RS --------"+ reality.substring(8, reality.length()-8) + "--------");
-		}
-		else if(!probs && html){
-			System.out.println(Useful.htmlcode(content));
+		String content2 = "";
+		for(int i = 0; i < 10000; i++){
+			if(prim[i].getid() == "foo") i = 10000;
+			else {
+				if(reality[i].length() < 17){
+					System.out.println("Sequence must be at least 17 bases long");
+					i = 9999;
+				}
+				else {
+					content += Useful.htmlstring(p[i]) + "" + "RS --------"+ reality[i].substring(8, reality[i].length()-8) + "--------";
+				} 
+				content2 += Useful.htmlstring(p[i]) + probabilitiesHtml[i];
+				if(probs && !html){
+					content = content + probabilities[i];
+					System.out.println(Useful.makefastastring(p[i]) + probabilities[i]);
+					//System.out.println(Useful.makefastastring(p, pvalues));
+				}
+				else if(!probs && !html) {
+					System.out.print(Useful.makefastastring(p[i]));
+					if(reality[i] == null);
+					else System.out.println("RS --------"+ reality[i].substring(8, reality[i].length()-8) + "--------");
+				}
+			}
+			}
+		if(!probs && html){
+		System.out.println(Useful.htmlcode(content));
 		}
 		else {
 			System.out.println(Useful.htmlcode(content2));
