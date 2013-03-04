@@ -104,7 +104,7 @@ public class SOV {
 					dbseg.observed.endpos
 					- dbseg.observed.startpos + 1, dbseg.predicted.endpos
 					- dbseg.predicted.startpos + 1);
-			sum += ((minov + del) / (double) maxov)
+			sum += ((minov + del) /maxov)
 					* (dbseg.observed.endpos - dbseg.observed.startpos + 1);
 		}
 		return sum;

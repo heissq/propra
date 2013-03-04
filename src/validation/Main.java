@@ -1,6 +1,8 @@
 package validation;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -19,10 +21,10 @@ public class Main {
 	/**
 	 * @param args
 	 * @throws ParseException
-	 * @throws FileNotFoundException
+	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws ParseException,
-			FileNotFoundException {
+			IOException {
 //		 variablen für optionen:
 		String predictions_file = "predictions.txt";
 		String dssp_file = "dssp.txt";
@@ -105,7 +107,11 @@ public class Main {
 		
 //		 dataset.printids();
 		
-		dataset.printDataByPDBId("1a0sP00");
 //		dataset.printeverything();
+		dataset.printDataByPDBId("11asB00");
+		ArrayList<Data> data_package = dataset.getDataPackage();
+		
+		CreateSummary csum = new CreateSummary("example",detailed_file);
+		csum.createDetailedFileTxt(data_package, detailed_file, false);
 	}
 }

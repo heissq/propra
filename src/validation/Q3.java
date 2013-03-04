@@ -91,8 +91,6 @@ public class Q3 {
 		qeresult = 100 * ((double) counteree / countere);
 	}
 
-	// TODO einspeichern der werte!!!
-
 	public void print() {
 		System.out.println("q3=" + q3result);
 		System.out.println("qh=" + qhresult);

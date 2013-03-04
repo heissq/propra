@@ -88,7 +88,7 @@ public class Data {
 		result.qe = qe;
 		result.qc = qc;
 	}
-	
+
 	public void addRS(String rs) {
 		this.rs = rs;
 	}
@@ -113,9 +113,8 @@ public class Data {
 		System.out.println(br);
 		System.out.println("|\tQ3\t|\tQH\t|\tQE\t|\tQC\t|");
 		System.out.println("|\t" + df.format(result.q3) + "\t|\t"
-				+ df.format(result.qh) + "\t|\t"
- + df.format(result.qe) + "\t|\t"
- + df.format(result.qc) + "\t|");
+				+ df.format(result.qh) + "\t|\t" + df.format(result.qe)
+				+ "\t|\t" + df.format(result.qc) + "\t|");
 		System.out.println(br);
 
 	}
@@ -125,30 +124,28 @@ public class Data {
 		char lastc = 'X';
 		Segment tmp = null;
 		for (int i = windowsize; i < rs.length() - windowsize; i++) {
-			if (lastc != rs.charAt(i))
-			{
+			if (lastc != rs.charAt(i)) {
 				if (lastc != 'X')
 					observed_segments.add(tmp);
-				tmp = new Segment(i,rs.charAt(i),i,i);
+				tmp = new Segment(i, rs.charAt(i), i, i);
 			}
 			if (lastc == rs.charAt(i))
 				tmp.endpos = i;
-				
+
 			// nun speichern des letzten chars..
 			lastc = rs.charAt(i);
 			if (i == rs.length() - 1 - windowsize)
 				observed_segments.add(tmp);
 		}
-		
+
 		// predicted segments
 		lastc = 'X';
 		tmp = null;
 		for (int i = windowsize; i < ps.length() - windowsize; i++) {
-			if (lastc != ps.charAt(i))
-			{
+			if (lastc != ps.charAt(i)) {
 				if (lastc != 'X')
 					predicted_segments.add(tmp);
-				tmp = new Segment(i,ps.charAt(i),i,i);
+				tmp = new Segment(i, ps.charAt(i), i, i);
 			}
 
 			if (lastc == ps.charAt(i))
@@ -163,14 +160,14 @@ public class Data {
 		// deleteObsSegmentsOppositeofHyphens();
 		calcDoubleSegments();
 		calcNonOverlapSegments();
-	}	
-	
+	}
+
 	public void printSegments() {
 		System.out.println("Segments of observed:");
 		for (Segment sobs : observed_segments) {
 			System.out.println(sobs);
 		}
-		
+
 		System.out.println("Segments of predicted:");
 		for (Segment pobs : predicted_segments) {
 			System.out.println(pobs);
@@ -226,7 +223,7 @@ public class Data {
 					// lastindex um position für nächsten obsseg segment zu
 					// speichern und nicht wieder durch alle elemente davor
 					// durchiterieren
-					lastindex = i + 1;
+					lastindex = i;
 				} else if (obsseg.endpos >= tmp.startpos
 						&& obsseg.endpos <= tmp.endpos && obsseg.ch == tmp.ch) {
 
@@ -236,7 +233,7 @@ public class Data {
 					obsseg.overlap = true;
 
 					// lastindex
-					lastindex = i + 1;
+					lastindex = i;
 				} else if (obsseg.startpos <= tmp.startpos
 						&& obsseg.endpos >= tmp.endpos && obsseg.ch == tmp.ch) {
 					obsseg.overlap = true;
@@ -245,7 +242,7 @@ public class Data {
 					int identity = obsseg.startpos * tmp.startpos;
 					dbl_segments.add(new DoubleSegment(identity, obsseg, tmp));
 				} else if (obsseg.startpos > tmp.startpos
-						&& obsseg.endpos < tmp.endpos) {
+						&& obsseg.endpos < tmp.endpos && obsseg.ch == tmp.ch) {
 					obsseg.overlap = true;
 
 					// segment alles
@@ -294,6 +291,7 @@ public class Data {
 			}
 		}
 	}
+
 	// ArrayList für nonoverlapping segments
 	public void calcNonOverlapSegments() {
 		for (Segment seg : observed_segments) {
