@@ -1,6 +1,7 @@
 package gorpack;
 
 import java.io.*;
+import java.lang.reflect.Array;
 
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
@@ -105,15 +106,12 @@ public class Useful {
 	//works as of 26-02 15:17 parses file to sequence
 	public static Sequence[] filetosequence(String path, int tr) throws FileNotFoundException{
 		Sequence[] out = new Sequence[10000];
-
-		for(int i = 0; i<10000; i++){
-			out[i] = new Sequence();
-		}
+		out[0] = new Sequence();
+		int ct = 0;
 		try{
 		FileReader input = new FileReader(path);
 		BufferedReader br = new BufferedReader(input);
 		String line;
-		int ct = 0;
 		line = br.readLine();
 		if(line.startsWith(">")){ 	
 			out[0].setid(line);
@@ -129,19 +127,21 @@ public class Useful {
 			else if(line.startsWith("SS")) {
 				String foo = line.substring(3);
 				out[ct].setss(foo);}
-			else ct++;
-			//System.out.println(">>>>"+out[0].getps());
+			else {
+				ct++;
+				out[ct] = new Sequence();
+			}
+//			System.out.println(">>>>"+out[0].getps());
 		}
 		br.close();
 		} catch(FileNotFoundException e){
 			//System.out.println("Hallo");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		return out;
+		Sequence[] returnarray = new Sequence[ct+1];
+		System.arraycopy(out, 0, returnarray, 0, ct+1);
+		return returnarray;
 	}
 	
 	//if no number of gaps between model tables is given, this method is called

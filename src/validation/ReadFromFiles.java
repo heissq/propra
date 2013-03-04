@@ -10,8 +10,7 @@ public class ReadFromFiles {
 	public static void readToData(String file, DataSet ds)
 			throws FileNotFoundException {
 		try {
-			FileReader input = new FileReader(file);
-			BufferedReader br = new BufferedReader(input);
+			BufferedReader br = new BufferedReader(new FileReader(file));
 			String foo;
 			String id = "";
 			String as = "";
