@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class CrossValidation {
 	public int identifier;
-	public int n;
-	public int chunkSize;
+	private int n;
+	private int trainn;
 	private DataSet dataset;
 
 	// variablen noch nicht sicher
@@ -22,10 +22,11 @@ public class CrossValidation {
 	 * @param ds dataset inklusiver aller vorhandenen daten
 	 * @param chunkSize größe des testdatenpaket
 	 */
-	public CrossValidation(DataSet ds, int chunkSize) {
-		this.chunkSize = chunkSize;
+	public CrossValidation(DataSet ds, int n, int trainn) {
 		dataset = ds;
 		makeDataPackage();
+		this.n = n;
+		this.trainn = trainn;
 	}
 	//TODO unterschiedliche varianten für konstruktor
 
@@ -34,6 +35,4 @@ public class CrossValidation {
 	public void makeDataPackage() {
 		daten = dataset.getDataPackage();
 	}
-	
-	
 }
