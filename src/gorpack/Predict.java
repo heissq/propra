@@ -82,7 +82,7 @@ public class Predict {
 				else {
 					prediction[i] = g.predictString(prim[i].getps());
 					reality[i] = prim[i].getss();
-					probabilities[i] = g.predictString(prim[0].getps());
+					probabilities[i] = g.predictStringProbs(prim[0].getps());
 					probabilitiesHtml[i] = g.predictStringProbs(prim[0].getps());
 					p[i] = new Sequence(prim[i].getid(), prim[i].getps(), prediction[i]);
 				}
@@ -97,7 +97,7 @@ public class Predict {
 				else {
 					prediction[i] = g.predictString(prim[i].getps());
 					reality[i] = prim[i].getss();
-					probabilities[i] = g.predictString(prim[0].getps());
+					probabilities[i] = g.predictStringProbs(prim[0].getps());
 					probabilitiesHtml[i] = g.predictStringProbs(prim[0].getps());
 					p[i] = new Sequence(prim[i].getid(), prim[i].getps(), prediction[i]);
 				}
@@ -124,7 +124,7 @@ public class Predict {
 				}
 				else if(!probs && !html) {
 					System.out.print(Useful.makefastastring(p[i]));
-					if(reality[i] == null);
+					if(reality[i] == null || reality[i].equals(""));
 					else System.out.println("RS --------"+ reality[i].substring(8, reality[i].length()-8) + "--------");
 				}
 			}
