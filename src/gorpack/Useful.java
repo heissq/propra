@@ -119,7 +119,7 @@ public class Useful {
 		while((line = br.readLine()) != null){
 			//System.out.println("++++"+line);
 			if(line.startsWith(">")) {
-				String foo = line.substring(tr);
+				String foo = line;
 				out[ct].setid(foo);}
 			else if(line.startsWith("AS")) {
 				String foo = line.substring(3);
