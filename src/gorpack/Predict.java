@@ -76,7 +76,7 @@ public class Predict {
 			g.setmodel(modelarr);
 			g.makematrix(modelarr);
 			for(int i = 0; i < 10000; i ++){
-				if(prim[i].getid() == "foo") i = 10000;
+				if(prim[i].getid().equals("foo")) i = 10000;
 				else {
 					prediction[i] = g.predictString(prim[i].getps());
 					reality[i] = prim[i].getss();
@@ -91,7 +91,7 @@ public class Predict {
 			g.setmodel(modelarr);
 			g.makematrix(modelarr);
 			for(int i = 0; i < 10000; i ++){
-				if(prim[i].getid() == "foo") i = 10000;
+				if(prim[i].getid().equals("foo")) i = 10000;
 				else {
 					prediction[i] = g.predictString(prim[i].getps());
 					reality[i] = prim[i].getss();
@@ -107,12 +107,14 @@ public class Predict {
 		for(int i = 0; i < 10000; i++){
 			if(prim[i].getid() == "foo") i = 10000;
 			else {
-				if(reality[i].length() < 17){
+				if(reality[i].length() < 17 && (!reality[i].equals("foo"))){
 					System.out.println("Sequence must be at least 17 bases long");
-					i = 9999;
+					if(reality[i].equals("foo"));
+					else i = 9999;
 				}
 				else {
-					content += Useful.htmlstring(p[i]) + "" + "RS --------"+ reality[i].substring(8, reality[i].length()-8) + "--------";
+					if(reality[i].equals("foo")) content += Useful.htmlstring(p[i]);
+					else content += Useful.htmlstring(p[i]) + "" + "RS --------"+ reality[i].substring(8, reality[i].length()-8) + "--------";
 				} 
 				content2 += Useful.htmlstring(p[i]) + probabilitiesHtml[i];
 				if(probs && !html){
@@ -123,6 +125,7 @@ public class Predict {
 				else if(!probs && !html) {
 					System.out.print(Useful.makefastastring(p[i]));
 					if(reality[i] == null);
+					else if(reality[i].equals("foo")) System.out.println("");
 					else System.out.println("RS --------"+ reality[i].substring(8, reality[i].length()-8) + "--------");
 				}
 			}
