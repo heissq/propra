@@ -111,6 +111,7 @@ public class Gor4Model {
 	}
 	
 	public int[] predict(int[] ps){
+		if(ps.length < windowsize) Useful.tooshort();
 		int[] r = new int[ps.length];
 		for(int x = 0; x < whalf; x++){
 			r[x] = 3;

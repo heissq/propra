@@ -1,15 +1,13 @@
 package gorpack;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class Useful {
 //Tools needed in every GOR Model. Only static references possible
 	public final static int aa = 21;
 	public final static int windowsize = 17;
+	
+	//counts number of secondary structure elements in String
 	public static int[] countss(String ss){
 		int[] r = {0,0,0};
 		for(int i = 0; i<ss.length(); i++){
@@ -21,7 +19,6 @@ public class Useful {
 	}
 	
 	public static String aminoacids = "ACDEFGHIKLMNPQRSTVWY";
-	
 	
 	//Amino Acid -> Integer
 	public static int aaint(char aa){
@@ -62,7 +59,7 @@ public class Useful {
 			}
 			return 3;
 		}
-	
+	//Integer to Secondary Structure
 	public static String sschar(int i){
 		if(i == 0) return "C";
 		else if(i == 1) return "E";
@@ -99,6 +96,7 @@ public class Useful {
 		br.close();
 		} catch(FileNotFoundException e){
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return out;
@@ -147,9 +145,16 @@ public class Useful {
 		return out;
 	}
 	
+	//if no number of gaps between model tables is given, this method is called
 	public static Sequence[] filetosequence(String path) throws FileNotFoundException{
 		return filetosequence(path, 2);
 	}
+	
+	//extracts real secondary structure 
+	public static Sequence[] realss(String path) throws FileNotFoundException{
+		return filetosequence(path, 2);
+	}
+	
 	//makes Secondary Structure String from int array
 	public static String makess(int[] ss){
 		String sek = "";
@@ -160,7 +165,7 @@ public class Useful {
 		}
 		return k;
 	}
-	//reads type of Gor Matrix file
+	//reads type of Gor Matrix file. Very extraordinary way of parsing
 	public static int type(String path){
 		int ret = 0;
 		try{
@@ -182,6 +187,7 @@ public class Useful {
 			}
 		return ret;
 	}
+	
 	//reads three dimensional model file
 	public static int[][][] readmodel(String path){
 		int[][][] out = new int[3][aa][windowsize];
@@ -265,17 +271,86 @@ public class Useful {
 			}
 			return out;
 	}
+	
+	//reads six dimensional model
+	public static int[][][][][][] read4model(String path){
+		//C,E,H -- Aminosäure -- Aminosäure an Stelle -- Stelle -- Aminosäure in Tabelle - Position
+		int[][][][][][] out = new int[3][aa][aa][windowsize][aa][windowsize];
+		try{
+			FileReader input = new FileReader(path);
+			BufferedReader br = new BufferedReader(input);
+			String line;
+			line = br.readLine();
+			if(line.startsWith("//")){ 
+				int dim = Integer.parseInt(line.substring(9,10));
+				br.readLine();
+			}
+			int k = -1;
+			int cha = 0;
+			int cha2 = 0;
+			int cha3 = 0; //window position
+			while((line = br.readLine()) != null){
+				if(line.startsWith("=")) {
+					if(line.charAt(7) == '-'){
+						cha3 = - (Integer.parseInt(line.substring(8,9))) + 8;
+					}
+					else cha3 = Integer.parseInt(line.substring(7,8)) + 8;
+					cha2 = aatoint(line.substring(5,6))[0];
+					cha = aatoint(line.substring(3,4))[0];
+					k = sstoint(line.substring(1,2))[0];
+					br.readLine();}
+				else if(line.startsWith("Y")) {
+					String[] s = line.split("\t");
+					char c = s[0].charAt(0);
+					for(int i = 0; i < s.length - 1; i++){
+					out[k][cha][cha2][cha3][aaint(c)][i] = Integer.parseInt(s[i+1]);
+					}
+					br.readLine();}
+				else if(line.startsWith("+")) {
+					return out;
+				}
+				else {
+					String[] s = line.split("\t");
+					char c = s[0].charAt(0);
+					for(int i = 0; i < s.length - 1; i++){
+						out[k][cha][cha2][cha3][aaint(c)][i] = Integer.parseInt(s[i+1]);
+					}
+				}
+			}
+			br.close();
+			} catch(FileNotFoundException e){
+				//System.out.println("Hallo");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return out;
+	}
+	
+	
 	//takes sequence, makes FASTA format output
 	public static String makefastastring(Sequence s){
 		String result = "";
 		String a = s.getid();
 		String b = s.getps();
 		String c = s.getss();
-		result = result + ">" + a + "\n";
+		result = result  + a + "\n";
 		result = result + "AS " + b + "\n";
-		result = result + "SS " + c + "\n";
+		result = result + "PS " + c + "\n";
 		return result;
 	}
+	//takes sequence, makes FASTA format output
+		public static String htmlstring(Sequence s){
+			String result = "";
+			String a = s.getid();
+			String b = s.getps();
+			String c = s.getss();
+			result = result + a + "<br>";
+			result = result + "AS " + b + "<br>";
+			result = result + "PS " + c + "<br>";
+			return result;
+		}
+	
 	/*public static String makefastastring(Sequence s, String[]pr){
 		String result = "";
 		String a = s.getid();
@@ -333,5 +408,47 @@ public class Useful {
 		pw.close();
 		return true;
 	}
+	//and for gor4
+	public static boolean writemodelfile(String path, Gor4Model m) throws IOException{
+		FileWriter pw = new FileWriter(path);
+		String s = "";
+		pw.write(m.head + "\n" + "\n");
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < m.naa-1; j++){
+				for(int k = 0; k < m.naa-1; k++){
+					for(int l = 0; l < m.windowsize; l++){
+						pw.write("=" + Useful.sschar(i) + "," + Useful.aachar(j) + "," + Useful.aachar(k) +"," + (l-8) +"=" + "\n" + "\n");
+						for(int n = 0; n < m.naa-1; n++){
+							pw.write(Useful.aachar(n) + "\t");
+							for(int p = 0; p < m.windowsize; p++){
+								pw.write(m.model[i][j][k][l][n][p] + "\t");
+							}
+							pw.write("\n");
+						}
+						if(l != m.windowsize-1)pw.write("\n");
+					}
+					if(j != m.naa-2 || k!= m.naa-2) pw.write("\n");
+				}
+				if(j == m.naa-2) pw.write("\n");
+			}
+		}
+		pw.flush();
+		pw.close();
+		return true;
+	}
+
+	public static void tooshort() {
+		// TODO Auto-generated method stub
+		System.out.println("Sequence too short. At least "+windowsize+" bp length required");
+		System.exit(42);
+	}
+	
+	public static String htmlcode(String content){
+		String ret = "";
+		ret = ret + "<html><head><title>Secondary Structure Prediction</title></head>";
+		ret = ret + "<body><h2>" +content+ "</h2></body></html>";
+		return ret;
+	}
+	
 
 }

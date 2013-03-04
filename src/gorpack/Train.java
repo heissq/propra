@@ -33,19 +33,18 @@ public class Train {
 			System.out.println("Select Database");
 			}
 			if(cmd.hasOption("method")){
-			switch(cmd.getOptionValue("method")){
-			case "gor1": type = 1;
-			case "gor3": type = 3;
-			case "gor4": type = 4;
+			if (cmd.getOptionValue("method").equals("gor1")) {type = 1;}
+			else if (cmd.getOptionValue("method").equals("gor3")) {type = 3;}
+			else if (cmd.getOptionValue("method").equals("gor4")) {type = 4;}
 			}
-			} else {
+			else {
 			System.out.println("Default Method Gor1 selected");
 			}
 			if(cmd.hasOption("model")){
 			filename = cmd.getOptionValue("model");
 			} else {
 			filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
-			System.out.println("foo");
+			//System.out.println("foo");
 			}
 			//String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 			//String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";

@@ -94,11 +94,15 @@ public class Gor1Model implements GorModel {
 	//Calculates most likely Secondary Structure
 	public double[] prob(int[] ps, int pos){
 		double[] p = new double[4];
+		double[] scores = new double[3];
 		for(int i = 0; i < windowsize; i++){
-			p[0] += (Math.exp(matrix[0][ps[pos+i-whalf]][i])/(1.0+Math.exp(matrix[0][ps[pos+i-whalf]][i])));
-			p[1] += (Math.exp(matrix[1][ps[pos+i-whalf]][i])/(1.0+Math.exp(matrix[1][ps[pos+i-whalf]][i])));
-			p[2] += (Math.exp(matrix[2][ps[pos+i-whalf]][i])/(1.0+Math.exp(matrix[2][ps[pos+i-whalf]][i])));
-		}
+			scores[0] += matrix[0][ps[pos+i-whalf]][i];
+			scores[1] += matrix[1][ps[pos+i-whalf]][i];
+			scores[2] += matrix[2][ps[pos+i-whalf]][i];
+			}
+		p[0] = (Math.exp(scores[0])/(1.0+Math.exp(scores[0])));
+		p[1] = (Math.exp(scores[1])/(1.0+Math.exp(scores[1])));
+		p[2] = (Math.exp(scores[2])/(1.0+Math.exp(scores[2])));
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
 		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
@@ -122,6 +126,7 @@ public class Gor1Model implements GorModel {
 	}*/
 	
 	public int[] predict(int[] ps){
+		if(ps.length < windowsize) Useful.tooshort();
 		int[] r = new int[ps.length];
 		for(int x = 0; x < whalf; x++){
 			r[x] = 3;
@@ -132,7 +137,6 @@ public class Gor1Model implements GorModel {
 			r[i] = (int) p[3];
 			//System.out.println("foobar");
 		}
-		
 		return r;
 	}
 	/*
@@ -158,18 +162,17 @@ public class Gor1Model implements GorModel {
 		return r;
 	}*/
 	
-public String[] probabilities(int[] ps){
+	public String[] probabilities(int[] ps){
 		String[] r = new String[3];
-		for(int i = 8; i < ps.length-8; i++){
+		for(int i = whalf; i < ps.length-whalf; i++){
 			double[] p = prob(ps, i);
-			r[0] = r[0] + "" +(int)((p[0]-7)*10);
-			r[1] = r[1] + "" +(int)((p[1]-7)*10);
-			r[2] = r[2] + "" +(int)((p[2]-7)*10);
+			r[0] = r[0] + "" +(int)(p[0]*10);
+			r[1] = r[1] + "" +(int)(p[1]*10);
+			r[2] = r[2] + "" +(int)(p[2]*10);
 		}
 		//System.out.println("foobar");
 		return r;
 	}
-	
 	
 	public String predictString(int[] ps){
 		int[] num = predict(ps);
@@ -188,6 +191,13 @@ public String[] probabilities(int[] ps){
 		String[] probs = probabilities(foo);
 		//System.out.println(num[1]);
 		return "\n" + "PH" + probs[2] + "\n" + "PE" + probs[1] + "\n" + "PC" + probs[0] ;
+	}
+	public String predictStringProbsHtml(String ps){
+		int[] foo = Useful.aatoint(ps);
+		int[] num = predict(foo);
+		String[] probs = probabilities(foo);
+		//System.out.println(num[1]);
+		return  "PH --------" + probs[2].substring(4) + "--------<br>" + "PE --------" + probs[1].substring(4) + "--------<br>" + "PC --------" + probs[0].substring(4) + "--------" ;
 	}
 	/*public int[][] predictProbs(String ps){
 		int[][] res = new int[3][ps.length()];

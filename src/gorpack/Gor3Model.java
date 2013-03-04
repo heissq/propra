@@ -49,13 +49,26 @@ public class Gor3Model {
 		return ct;
 	}
 	
+	public static int[] summatrix(int[][][][] mod, int aa){
+		int[] ct = new int[3];
+		for(int i = 0; i < nstates; i++){
+				for(int k = 0; k < naa; k++) {
+					for(int l = 0; l < windowsize; l++){
+					ct[i] += mod[i][aa][k][l];
+				}
+			}
+		}
+		return ct;
+	}
+	
 	// Fills matrix according to training results
 	public void makematrix(int[][][][] mod){
 		this.matrix = new double[nstates][naa][naa][windowsize];
-		int[] summ = summatrix(mod);
+		//int[] summ = summatrix(mod);
 		for(int i = 0; i < nstates; i++){
-			for(int j = 0; j < naa; j++){
-				for(int k = 0; k < naa; k++) {
+			for(int j = 0; j < naa-1; j++){
+				int[] summ = summatrix(mod, j);
+				for(int k = 0; k < naa-1; k++) {
 					for(int l = 0; l < windowsize; l++){
 					matrix[i][j][k][l] =  Math.log((double)mod[i][j][k][l]/(mod[0][j][k][l] +
 							mod[1][j][k][l] + mod[2][j][k][l] - mod[i][j][k][l])) +  
@@ -65,6 +78,7 @@ public class Gor3Model {
 			}
 		}
 	}
+	
 	//Trains Gor1 Model
 	public void train(String prim, String sek) {
 		// TODO Auto-generated method stub
@@ -95,14 +109,32 @@ public class Gor3Model {
 		
 	}
 	
+	public String[] probabilities(int[] ps){
+		String[] r = new String[3];
+		for(int i = whalf; i < ps.length-whalf; i++){
+			double[] p = prob(ps, i);
+			r[0] = r[0] + "" +(int)(p[0]*10);
+			r[1] = r[1] + "" +(int)(p[1]*10);
+			r[2] = r[2] + "" +(int)(p[2]*10);
+		}
+		//System.out.println("foobar");
+		return r;
+	}
+	
 	//Calculates most likely Secondary Structure
 	public double[] prob(int[] ps, int pos){
 		double[] p = new double[4];
+		double[] scores = new double[4];
 		for(int i = 0; i < windowsize; i++){
-			p[0] += matrix[0][ps[pos]][ps[pos+i-whalf]][i];
-			p[1] += matrix[1][ps[pos]][ps[pos+i-whalf]][i];
-			p[2] += matrix[2][ps[pos]][ps[pos+i-whalf]][i];
+			if(i != whalf || true){
+			scores[0] += matrix[0][ps[pos]][ps[pos+i-whalf]][i];
+			scores[1] += matrix[1][ps[pos]][ps[pos+i-whalf]][i];
+			scores[2] += matrix[2][ps[pos]][ps[pos+i-whalf]][i];
 		}
+		}
+		p[0] = (Math.exp(scores[0])/(1.0+Math.exp(scores[0])));
+		p[1] = (Math.exp(scores[1])/(1.0+Math.exp(scores[1])));
+		p[2] = (Math.exp(scores[2])/(1.0+Math.exp(scores[2])));
 		if(p[0] > p[1] && p[0] > p[2]) p[3] = 0;
 		else if(p[1] > p[0] && p[1] > p[2]) p[3] = 1;
 		else if(p[2] > p[0] && p[2] > p[1]) p[3] = 2;
@@ -111,6 +143,7 @@ public class Gor3Model {
 	}
 	
 	public int[] predict(int[] ps){
+		if(ps.length < windowsize) Useful.tooshort();
 		int[] r = new int[ps.length];
 		for(int x = 0; x < whalf; x++){
 			r[x] = 3;
@@ -125,6 +158,21 @@ public class Gor3Model {
 		return r;
 	}
 	
+	public String predictStringProbs(String ps){
+		int[] foo = Useful.aatoint(ps);
+		int[] num = predict(foo);
+		String[] probs = probabilities(foo);
+		//System.out.println(num[1]);
+		return  "PH --------" + probs[2].substring(4) + "\n" + "PE --------" + probs[1].substring(4) + "\n" + "PC --------" + probs[0].substring(4) ;
+	}
+	
+	public String predictStringProbsHtml(String ps){
+		int[] foo = Useful.aatoint(ps);
+		int[] num = predict(foo);
+		String[] probs = probabilities(foo);
+		//System.out.println(num[1]);
+		return  "PH --------" + probs[2].substring(4) + "--------<br>" + "PE --------" + probs[1].substring(4) + "--------<br>" + "PC --------" + probs[0].substring(4) + "--------" ;
+	}
 	
 //	public int[][] probabilities(int[] ps){
 //		int[][] r = new int[ps.length][nstates];
