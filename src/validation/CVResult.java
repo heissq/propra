@@ -7,6 +7,7 @@ public class CVResult extends Result {
 	public CVResult() {
 	}
 
+	//TODO super(params) fehlt
 	public CVResult(String pdbid, int iteration, int iterationshuffle) {
 		identitiy.iteration = iteration;
 		identitiy.shuffle_set_iteration = iterationshuffle;

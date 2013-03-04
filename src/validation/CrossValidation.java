@@ -1,5 +1,7 @@
 package validation;
 
+import gorpack.Sequence;
+
 import java.util.ArrayList;
 
 public class CrossValidation {
@@ -34,5 +36,9 @@ public class CrossValidation {
 	// TODO anzahl der elemente in extra methode - polymorphie
 	public void makeDataPackage() {
 		daten = dataset.getDataPackage();
+	}
+	
+	public void oneIteration() {
+		
 	}
 }

@@ -85,8 +85,18 @@ public class Gor1Model implements GorModel {
 				this.train(data[i].getps(), data[i].getss());
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * train model
+	 * 
+	 * @param data mit sequence
+	 */
+	public void train2(Sequence[] data) {
+		for (int i = 0; i < data.length; i++) {
+			this.train(data[i].getps(), data[i].getss());
 		}
 	}
 	
