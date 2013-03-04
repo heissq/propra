@@ -2,13 +2,15 @@ package gorpack;
 
 import java.io.IOException;
 
+import javax.swing.text.AbstractDocument.Content;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-public class TrainPredict {
+public class TrainPredict2 {
 
 	/**
 	 * @param args
@@ -55,45 +57,29 @@ public class TrainPredict {
 			System.out.println("U stupid?");
 		}
 		Sequence[] prim = Useful.filetosequence(topred);
-		Sequence p = new Sequence();
+		Sequence[] p = new Sequence[prim.length];
 		//String p = "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
 		//String filename = "/home/proj/biocluster/praktikum/bioprakt/progprakt6/Solution4/test.txt";
 		// TODO Auto-generated method stub
-		
+		String content = "";
+		String content2 = "";
 		if(type == 3){
 			Gor3Model g = new Gor3Model();
 			g.train(database);
-			String prediction = g.predictString(prim[0].getps());
-			reality = prim[0].getss();
-			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
-			probabilities = g.predictStringProbs(prim[0].getps());
-			probabilitiesHtml = g.predictStringProbsHtml(prim[0].getps());
-			
+			for ( int i = 0; i<prim.length;i++){
+				String prediction = g.predictString(prim[i].getps());
+				reality = prim[i].getss();
+				p[i] = new Sequence(prim[i].getid(), prim[i].getps(), prediction);
+				}
 		}
 		else{
 			Gor1Model g = new Gor1Model();
 			g.train(database);
-			String prediction = g.predictString(prim[0].getps());
-			reality = prim[0].getss();
-			p = new Sequence(prim[0].getid(), prim[0].getps(), prediction);
-			probabilities = g.predictStringProbs(prim[0].getps());
-			probabilitiesHtml = g.predictStringProbsHtml(prim[0].getps());
+			for ( int i = 0; i<prim.length;i++){
+				String prediction = g.predictString(prim[i].getps());
+				reality = prim[i].getss();
+				p[i] = new Sequence(prim[i].getid(), prim[i].getps(), prediction);
 			}
-		
-		String content = "";
-		if(reality.length() < 17){
-			content = Useful.htmlstring(p);
-		}
-		else {
-		content = Useful.htmlstring(p) + "" + "RS --------"+ reality.substring(8, reality.length()-8) + "--------";
-		} 
-		String content2 = Useful.htmlstring(p) + probabilitiesHtml;
-
-		if(!probs){
-			System.out.println(Useful.htmlcode(content));
-		}
-		else {
-			System.out.println(Useful.htmlcode(content2));
 		}
 		
 		}
