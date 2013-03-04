@@ -85,21 +85,13 @@ public class Main {
 		}
 
 		if (cmd.hasOption("f")) {
-			switch (cmd.getOptionValue("f")) {
-			case "html":
+			String tmp = cmd.getOptionValue("f");
+			if (tmp.equals("html") || tmp.equals("html:")){
 				detailed_file = detailed_file.replaceAll(".txt", ".html");
 				System.out.println(detailed_file+";"+summary_file);
-				break;
-			case "html:":
-				detailed_file = detailed_file.replaceAll(".txt", ".html");
-				System.out.println(detailed_file+";"+summary_file);
-				break;
-			default:
+			} else {
 				System.out.println("Default Value = "+detailed_file+";"+summary_file);
-				break;
 			}
-		} else {
-			System.out.println("Default value = summary.txt");
 		}
 
 		ReadFromFiles.readToData(predictions_file, dataset);

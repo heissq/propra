@@ -3,8 +3,8 @@ package validation;
 import java.util.ArrayList;
 
 public class SOV {
-	private ArrayList<DoubleSegment> dbl_segments = new ArrayList<>();
-	private ArrayList<Segment> non_overlap_segments = new ArrayList<>();
+	private ArrayList<DoubleSegment> dbl_segments = new ArrayList<DoubleSegment>();
+	private ArrayList<Segment> non_overlap_segments = new ArrayList<Segment>();
 	public double resultscore;
 	public double sov_h;
 	public double sov_e;
@@ -22,14 +22,14 @@ public class SOV {
 
 		// for 'H'
 		//temp doublesegment arraylist
-		ArrayList<DoubleSegment> dbs_h = new ArrayList<>();
+		ArrayList<DoubleSegment> dbs_h = new ArrayList<DoubleSegment>();
 		for (DoubleSegment dbs : dbl_segments) {
 			if (dbs.observed.ch == 'H')
 				dbs_h.add(dbs);
 		}
 
 		//temp segment arraylist
-		ArrayList<Segment> non_h = new ArrayList<>();
+		ArrayList<Segment> non_h = new ArrayList<Segment>();
 		for (Segment s : non_overlap_segments) {
 			if (s.ch == 'H')
 				non_h.add(s);
@@ -40,14 +40,14 @@ public class SOV {
 
 		// for 'E'
 		//temp doublesegment arraylist
-		ArrayList<DoubleSegment> dbs_e = new ArrayList<>();
+		ArrayList<DoubleSegment> dbs_e = new ArrayList<DoubleSegment>();
 		for (DoubleSegment dbs : dbl_segments) {
 			if (dbs.observed.ch == 'E')
 				dbs_e.add(dbs);
 		}
 
 		//temp segment arraylist
-		ArrayList<Segment> non_e = new ArrayList<>();
+		ArrayList<Segment> non_e = new ArrayList<Segment>();
 		for (Segment s : non_overlap_segments) {
 			if (s.ch == 'E')
 				non_e.add(s);
@@ -58,14 +58,14 @@ public class SOV {
 
 		// for 'C'
 		//temp doublesegment arraylist
-		ArrayList<DoubleSegment> dbs_c = new ArrayList<>();
+		ArrayList<DoubleSegment> dbs_c = new ArrayList<DoubleSegment>();
 		for (DoubleSegment dbs : dbl_segments) {
 			if (dbs.observed.ch == 'C')
 				dbs_c.add(dbs);
 		}
 
 		//temp segment arraylist
-		ArrayList<Segment> non_c = new ArrayList<>();
+		ArrayList<Segment> non_c = new ArrayList<Segment>();
 		for (Segment s : non_overlap_segments) {
 			if (s.ch == 'C')
 				non_c.add(s);

@@ -14,10 +14,10 @@ public class Data {
 	private String as = "";
 	// class containing q3, sov, ...
 	private Result result;
-	private ArrayList<Segment> observed_segments = new ArrayList<>();
-	private ArrayList<Segment> predicted_segments = new ArrayList<>();
-	private ArrayList<DoubleSegment> dbl_segments = new ArrayList<>();
-	private ArrayList<Segment> nonoverlapping_segments = new ArrayList<>();
+	private ArrayList<Segment> observed_segments = new ArrayList<Segment>();
+	private ArrayList<Segment> predicted_segments = new ArrayList<Segment>();
+	private ArrayList<DoubleSegment> dbl_segments = new ArrayList<DoubleSegment>();
+	private ArrayList<Segment> nonoverlapping_segments = new ArrayList<Segment>();
 
 	public String getRs() {
 		return rs;

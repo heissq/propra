@@ -10,7 +10,7 @@ public class DataSet {
 
 	// daten als datenpaket in dataset gespeichert
 	// bestehend aus daten
-	private static ArrayList<Data> daten = new ArrayList<>();
+	private static ArrayList<Data> daten = new ArrayList<Data>();
 
 	public DataSet() {
 		predictions_filename = Main.predictions_file;
@@ -116,7 +116,7 @@ public class DataSet {
 	
 	//whole data return
 	public ArrayList<Data> getDataPackage() {
-		ArrayList<Data> tmp = new ArrayList<>();
+		ArrayList<Data> tmp = new ArrayList<Data>();
 		for (Data data : daten) {
 			tmp.add(data);
 		}
