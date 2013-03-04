@@ -189,7 +189,7 @@ public class Gor1Model implements GorModel {
 		int[] num = predict(foo);
 		String[] probs = probabilities(foo);
 		//System.out.println(num[1]);
-		return "\n" + "PH" + probs[2] + "\n" + "PE" + probs[1] + "\n" + "PC" + probs[0] ;
+		return  "PH --------" + probs[2].substring(4) + "--------\n" + "PE --------" + probs[1].substring(4) + "--------\n" + "PC --------" + probs[0].substring(4) +"--------" ;
 	}
 	public String predictStringProbsHtml(String ps){
 		int[] foo = Useful.aatoint(ps);
