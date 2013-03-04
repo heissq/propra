@@ -88,7 +88,6 @@ public class Gor1Model implements GorModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
 	//Calculates most likely Secondary Structure

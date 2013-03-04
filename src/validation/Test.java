@@ -6,13 +6,11 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		//Segment[][] foo = SOV.makesegments("CCCCCHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC");
 		//System.out.println(SOV.makesegments("CCCCCHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC")[1][3].start);
 		//System.out.println(SOV.delta((SOV.makesegments("EHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC")), 0,1));
 		//System.out.println(SOV.minov((SOV.makesegments("CCCCCHCCEEECHHHHH", "HHCCCCCHHHHHEEHHHCC")), 0,1));
 		//System.out.println(SOV.overlaps(SOV.makesegments("CCCCEEHHHH", "CCCCEEHHHH"))[1][1].end);
-		System.out.println(SOV.overlaps("CCCCEEEHHEEHH", "CCCCEEEHHEEHH")[2][1].end);
 		//System.out.println(SOV.sov_value("CCCHHCEEEHHHH", "CCEECCEEEHHHH"));
 	}
 }

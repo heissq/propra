@@ -1,10 +1,11 @@
 package validation;
 
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import gorpack.*;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class CreateSummary {
 	// id
@@ -13,7 +14,7 @@ public class CreateSummary {
 	// parameter to validate:
 	private double q3 = -1;
 	private double sov = -1;
-	private double qh = -1; // TODO die drei q dinger berechnen
+	private double qh = -1;
 	private double qe = -1;
 	private double qc = -1;
 	private double sov_h = -1;
@@ -44,18 +45,16 @@ public class CreateSummary {
 		this.ps = ps;
 		this.filename = filename;
 	}
-
+	
 	public CreateSummary(String id, String filename) {
-		super();
 		this.id = id;
 		this.filename = filename;
 	}
 
-	public void createFile() throws IOException {
-		try { // TODO format richtig ansetzen --> frage wie viele sequenzen?
+	public void createFile(boolean append) throws IOException {
+		try {
 				// Create file
-			FileWriter fstream = new FileWriter(filename);
-			BufferedWriter out = new BufferedWriter(fstream);
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename,append));
 			
 			//erste zeile identifier
 			out.write(">"+id+" "+q3+" "+sov+" "+qh+" "+qe+" "+qc+" "+sov_h+" "+sov_e+" "+sov_c+"\n");
@@ -68,6 +67,32 @@ public class CreateSummary {
 			
 			//secondary structure chain
 			out.write("SS "+ss+"\n");
+			
+			// Close the output stream
+			out.close();
+		} catch (Exception e) {// Catch exception if any
+			System.err.println("Error: " + e.getMessage());
+		}
+	}
+	
+	public void createDetailedFileTxt(ArrayList<Data> daten,String filename,boolean append) throws IOException {
+		try {
+				// Create file
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename,append));
+			DecimalFormat df = new DecimalFormat("##.###");
+			for (Data data : daten) {
+				//erste zeile identifier
+				out.write(">"+data.pdbid+" "+df.format(data.getResult().q3)+" "+df.format(data.getResult().sov)+" "+df.format(data.getResult().qh)+" "+df.format(data.getResult().qe)+" "+df.format(data.getResult().qc)+" "+df.format(data.getResult().sov_h)+" "+df.format(data.getResult().sov_e)+" "+df.format(data.getResult().sov_c)+"\n");
+				
+				//amino acid chain
+				out.write("AS "+data.getAs()+"\n");
+				
+				//predicted secondary structure chain
+				out.write("PS "+data.getPs()+"\n");
+				
+				//secondary structure chain
+				out.write("RS "+data.getRs()+"\n");
+			}
 			
 			// Close the output stream
 			out.close();
