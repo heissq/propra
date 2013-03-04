@@ -166,7 +166,7 @@ public class Useful {
 	}
 	//reads type of Gor Matrix file. Very extraordinary way of parsing
 	public static int type(String path){
-		int ret = 0;
+		int ret = 0; 
 		try{
 			FileReader input = new FileReader(path);
 			BufferedReader br = new BufferedReader(input);
@@ -181,7 +181,6 @@ public class Useful {
 			} catch(FileNotFoundException e){
 				//System.out.println("Hallo");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		return ret;
