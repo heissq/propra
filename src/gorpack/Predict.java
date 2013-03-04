@@ -133,7 +133,7 @@ public class Predict {
 		if(!probs && html){
 		System.out.println(Useful.htmlcode(content));
 		}
-		else {
+		else if(probs && html) {
 			System.out.println(Useful.htmlcode(content2));
 		}
 	}
