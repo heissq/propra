@@ -36,9 +36,12 @@ public class ReadFromFiles {
 					as = foo.substring(3);
 				else if (foo.startsWith("PS"))
 					ps = foo.substring(3);
-				else if (foo.startsWith("RS"))
+				else if (foo.startsWith("RS") || foo.startsWith("SS"))
 					rs = foo.substring(3);
 				foo = br.readLine();
+			}
+			if (!id.isEmpty()){
+				ds.addInputChunk(id, rs, ps, as);
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
