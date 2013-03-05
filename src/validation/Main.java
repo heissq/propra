@@ -25,12 +25,14 @@ public class Main {
 		String summary_file = "summary.txt";
 		String detailed_file = "detailed_summary.txt";
 		boolean is_cross_validation = false;
+		boolean is_html = false;
 		int iterations_cross_validation = 10;
 		DataSet dataset = new DataSet();
 
 		Options opt = new Options();
 		opt.addOption("", "p", true, "<predictions>");
 		opt.addOption("", "r", true, "<dssp-file>");
+		//FIXME option nur angeben aber keine extra option... suchen nach wie geht das...
 		opt.addOption("", "f", true, "<txt|html>");
 		opt.addOption("", "s", true, "<summary file>");
 		opt.addOption("", "d", true, "<detailed file>");
@@ -87,7 +89,9 @@ public class Main {
 			String tmp = cmd.getOptionValue("f");
 			if (tmp.equals("html") || tmp.equals("html:")){
 				detailed_file = detailed_file.replaceAll(".txt", ".html");
+				summary_file = summary_file.replaceAll(".txt", ".html");
 				System.out.println(detailed_file+";"+summary_file);
+				is_html = true;
 			} else {
 				System.out.println("Default Value = "+detailed_file+";"+summary_file);
 			}
@@ -95,23 +99,19 @@ public class Main {
 
 		ReadFromFiles.readToData(predictions_file, dataset);
 		ReadFromFiles.readToData(dssp_file, dataset);
-
-		// ausdrucken der elemente
-
-		// System.out.println("warum");
-//		 System.out.println(dataset);
-		// System.out.println("----------");
-		
-//		 dataset.printids();
-		
-//		dataset.printeverything();
-//		dataset.printDataByPDBId("11asB00");
+		dataset.calcSummaryStatistics();
 		if (!is_cross_validation) {
 			ArrayList<Data> data_package = dataset.getDataPackage();
-			
+			//TODO id von createsummary entfernen da momentan total nutzlos
 			CreateSummary csum = new CreateSummary("example",detailed_file);
-			csum.createDetailedFileTxt(data_package, detailed_file, false);
-			csum.createSummaryFileTxt(dataset, summary_file);
+
+			if (is_html){
+				csum.createDetailedFileHtml(data_package, detailed_file, false);
+				csum.createSummaryFileHtml(dataset, summary_file);
+			} else {
+				csum.createDetailedFileTxt(data_package, detailed_file, false);
+				csum.createSummaryFileTxt(dataset, summary_file);
+			}
 		} else {
 			//Cross validation
 			/**
