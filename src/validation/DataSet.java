@@ -13,12 +13,18 @@ public class DataSet {
 	private double mean_sov = -1; //mean ....
 	private double max_sov = -1;
 	private double min_sov = 101;
+	private double mean_sovh = -1;
+	private double mean_sove = -1;
+	private double mean_sovc = -1;
 	
 	//q3
 	private double stdv_q3 = -1; //standarddeviation
 	private double mean_q3 = -1; //mean ....
 	private double max_q3 = -1;
 	private double min_q3 = 101;
+	private double mean_qh = -1;
+	private double mean_qe = -1;
+	private double mean_qc = -1;
 
 	// daten als datenpaket in dataset gespeichert
 	// bestehend aus daten
@@ -153,6 +159,15 @@ public class DataSet {
 		double[] db_array_sov = new double[daten.size()];
 		double[] db_array_q3 = new double[daten.size()];
 		
+		//qhec und sov hec aber nur mean value/arithmetisches mittel
+		double sum_array_qh = 0;
+		double sum_array_qe = 0;
+		double sum_array_qc = 0;
+		
+		double sum_array_sovh = 0;
+		double sum_array_sove = 0;
+		double sum_array_sovc = 0;
+		
 		double sum_sov = 0;
 		double sum_q3 = 0;
 		
@@ -163,6 +178,14 @@ public class DataSet {
 			//arithmetisches mittel
 			sum_sov += db_array_sov[i];
 			sum_q3 += db_array_q3[i];
+			
+			sum_array_qh += daten.get(i).getResult().qh;
+			sum_array_qe += daten.get(i).getResult().qe;
+			sum_array_qc += daten.get(i).getResult().qc;
+			
+			sum_array_sovh += daten.get(i).getResult().sov_h;
+			sum_array_sove += daten.get(i).getResult().sov_e;
+			sum_array_sovc += daten.get(i).getResult().sov_c;
 			
 			//max und min für q3 plus sov
 			max_q3 = Math.max(daten.get(i).getResult().q3,max_q3);
@@ -177,6 +200,12 @@ public class DataSet {
 		//wenn median gleich arithmetisches mittel anscheinend ist dann:
 		mean_q3 = armit_q3;
 		mean_sov = armit_sov;
+		mean_qh = sum_array_qh/daten.size();
+		mean_qe = sum_array_qh/daten.size();
+		mean_qc = sum_array_qh/daten.size();
+		mean_sovh = sum_array_sovh/daten.size();
+		mean_sove = sum_array_sove/daten.size();
+		mean_sovc = sum_array_sovc/daten.size();
 		
 		//oben werte... kein plan...wie man das nennen soll
 		double sum_oben_sov = 0;
