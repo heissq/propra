@@ -20,40 +20,40 @@ my $folder            = '';
 my @pdb_id_list       = ();
 
 my %aa = qw(
-ALA    A
-CYS    C
-ASP    D
-GLU    E
-PHE    F
-GLY    G
-HIS    H
-ILE    I
-LYS    K
-LEU    L
-MET    M
-ASN    N
-PRO    P
-GLN    Q
-ARG    R
-SER    S
-THR    T
-VAL    V
-TRP    W
-TYR    Y
+  ALA    A
+  CYS    C
+  ASP    D
+  GLU    E
+  PHE    F
+  GLY    G
+  HIS    H
+  ILE    I
+  LYS    K
+  LEU    L
+  MET    M
+  ASN    N
+  PRO    P
+  GLN    Q
+  ARG    R
+  SER    S
+  THR    T
+  VAL    V
+  TRP    W
+  TYR    Y
 );
 
 GetOptions(
     'pdb:s'      => \$pdb,
-'dssp:s'     => \$dssp,
+    'dssp:s'     => \$dssp,
     'dssp-bin:s' => \$dssp_bin,
-'t=s{3,3}'   => \@mandatory_options
+    't=s{3,3}'   => \@mandatory_options
 );
 
 $mode = $mandatory_options[0];
 
 # pdb_ids in datei einlesen
 open FILELIST, "<$mandatory_options[1]"
-    or die "angegebene Datei: $mandatory_options[1] nicht gefunden\.\n";
+  or die "angegebene Datei: $mandatory_options[1] nicht gefunden\.\n";
 while (<FILELIST>) {
     my $tmp = $_;
     $tmp =~ s/\n//;
@@ -67,90 +67,92 @@ if ( $mode eq 'pdb' ) {
 
     # do pdb mode
     my $array_ref = getPDBFiles( \@pdb_id_list );
+    `rm $dssp_file`;
 
-@file_protein_list = @{$array_ref};
-foreach my $file (@file_protein_list) {
+    @file_protein_list = @{$array_ref};
+    foreach my $file (@file_protein_list) {
 
-    # start und ende positionen TODO
-    my @helix_end       = ();
-    my @helix_start     = ();
-    my @sheet_start     = ();
-    my @sheet_end       = ();
-    my %sequences       = ();
-    my @sequence        = '';
-    my $sequences_chain = ();
-    my $last_chain      = '';
-    my $hash_ref        = '';
-    my $helix_chain     = ();
-    my $sheet_chain     = ();
+        # start und ende positionen TODO
+        my @helix_end       = ();
+        my @helix_start     = ();
+        my @sheet_start     = ();
+        my @sheet_end       = ();
+        my %sequences       = ();
+        my @sequence        = '';
+        my $sequences_chain = ();
+        my $last_chain      = '';
+        my $hash_ref        = '';
+        my $helix_chain     = ();
+        my $sheet_chain     = ();
 
-    my $pdb_id = $file;
-    $pdb_id =~ s/.*(\w{4})\.ent$/$1/;
+        my $pdb_id = $file;
+        $pdb_id =~ s/.*(\w{4})\.ent$/$1/;
 
-    open PDBFILE, "<$file" or die "datei nicht gefunden\n";
-    while ( my $line = <PDBFILE> ) {
+        open PDBFILE, "<$file" or die "datei nicht gefunden\n";
+        while ( my $line = <PDBFILE> ) {
 
-        # ATOM
-        if ( $line =~ /^ATOM.{9}CA\s+(\w{3})\s(\w)/ ) {
-            push @sequence, $1;    # VAL, etc ind @sequence einfügen
-            $sequences_chain .= $2;
-            $last_chain = $2;
+            # ATOM
+            if ( $line =~ /^ATOM.{9}CA\s+(\w{3})\s(\w)/ ) {
+                push @sequence, $1;    # VAL, etc ind @sequence einfügen
+                $sequences_chain .= $2;
+                $last_chain = $2;
+            }
+
+            # HELIX
+            if ( $line =~ /^HELIX.{14}(\w)\s*(\d+)\s{2}\w{3}\s\w\s*(\d+)/ ) {
+                $helix_chain .= $1;
+                push @helix_start, $2;
+                push @helix_end,   $3;
+            }
+
+            # SHEET
+            if ( $line =~ /^SHEET.{16}(\w)\s*(\d+)\s\s.{5}\s*(\d+)/ ) {
+                $sheet_chain .= $1;
+                push @sheet_start, $2;
+                push @sheet_end,   $3;
+            }
         }
-
-        # HELIX
-        if ( $line =~ /^HELIX.{14}(\w)\s*(\d+)\s{2}\w{3}\s\w\s*(\d+)/ ) {
-            $helix_chain .= $1;
-            push @helix_start, $2;
-            push @helix_end,   $3;
-        }
-
-        # SHEET
-        if ( $line =~ /^SHEET.{16}(\w)\s*(\d+)\s\s.{5}\s*(\d+)/ ) {
-            $sheet_chain .= $1;
-            push @sheet_start, $2;
-            push @sheet_end,   $3;
-        }
-    }
-    close PDBFILE;
+        close PDBFILE;
 
 #        for my $i ( 0 .. length($helix_chain)-1 ) {
 #           print "HELIX:";
 #           print substr($helix_chain,$i,1),"\n",$helix_start[$i],"->",$helix_end[$i],"\n";
 #        }
-    #
+#
 #        for my $j ( 0 .. length($sheet_chain)-1 ) {
 #           print "SHEET:";
 #           print substr($sheet_chain,$j,1),"\n",$sheet_start[$j],"->",$sheet_end[$j],"\n";
 #        }
 
-    # umwandeln von sequence 3-strings in sequenz
-    my $tmp = '';
+        # umwandeln von sequence 3-strings in sequenz
+        my $tmp = '';
 
-    # umwandeln von 3letter code in 1 letter code:
-    foreach my $AS (@sequence) {
-        $AS = $aa{$AS};
-    }
-    shift(@sequence)
-    ;    #TODO fragen warum muss erstes element entfernt werden:
-    # warum erstes element leer?
+        # umwandeln von 3letter code in 1 letter code:
+        foreach my $AS (@sequence) {
+            $AS = $aa{$AS};
+        }
+        shift(@sequence)
+          ;    #TODO fragen warum muss erstes element entfernt werden:
+               # warum erstes element leer?
 
-    #   print @sequence,"\n";
-    #   print $sequences_chain,"\n";
-    $hash_ref = processChains( \@sequence, $sequences_chain );
-%sequences = %$hash_ref;
+        #   print @sequence,"\n";
+        #   print $sequences_chain,"\n";
+        $hash_ref = processChains( \@sequence, $sequences_chain );
+        %sequences = %$hash_ref;
 
-$hash_ref = createStubSecChains( \%sequences );
+        $hash_ref = createStubSecChains( \%sequences );
         my %secondary_hash = %$hash_ref;
 
         $hash_ref = processSecChains(
             \@helix_start, \@helix_end,  $helix_chain, \@sheet_start,
-\@sheet_end,   $sheet_chain, \%secondary_hash
+            \@sheet_end,   $sheet_chain, \%secondary_hash
         );
 
         %secondary_hash = %{$hash_ref};
+
         #nun ausgabe in file:
         open PRINTFILE, ">>$dssp_file"
-            or die "output geht nicht zu erstellen warum auch immer \n";
+          or die "output geht nicht zu erstellen warum auch immer \n";
         foreach my $key ( sort keys %sequences ) {
             print $key;
             chomp($pdb_id);
@@ -259,132 +261,133 @@ sub processChains {
 }
 
 if ( $mode eq 'dssp' ) {
-    open FILE, ">$dssp_file" or die $!;
-    close FILE;
+    `touch $dssp_file`;
 
-    my $hash_ref = processDSSP( \@pdb_id_list );
+    open FILEPRINT, ">>$dssp_file"
+      or die "kann datei $dssp_file nicht erstellen\n";
 
-# in file einlesen die als dssp paramter angeben ist
-my %hash          = %{$hash_ref};
-my @aa_sequences  = @{ $hash{aa_sequences} };
-my @sec_sequences = @{ $hash{sec_sequences} };
-my @id_seq        = @{ $hash{id_seq} };
+    foreach (@pdb_id_list)
+    {
+        print $_;
+    my $hash_ref = processDSSP($_);
 
-open FILEPRINT, ">$dssp_file"
-    or die "kann datei $dssp_file nicht erstellen\n";
-for my $i ( 0 .. $#aa_sequences ) {
-    print FILEPRINT "\> $id_seq[$i]\n";
-    print FILEPRINT "AS $aa_sequences[$i]\n";
-    print FILEPRINT "SS $sec_sequences[$i]\n\n";
-}
-close FILEPRINT;
+    # in file einlesen die als dssp paramter angeben ist
+    my %hash          = %{$hash_ref};
+    my @aa_sequences  = @{ $hash{aa_sequences} };
+    my @sec_sequences = @{ $hash{sec_sequences} };
+    my @id_seq        = @{ $hash{id_seq} };
+
+    for my $i ( 0 .. $#aa_sequences ) {
+        print FILEPRINT "\> $id_seq[$i]\n";
+        print FILEPRINT "AS $aa_sequences[$i]\n";
+        print FILEPRINT "SS $sec_sequences[$i]\n\n";
+    }
+    }
 }
 
 sub processDSSP {
-    open FILE, ">$dssp_file" or die $!;
-    close FILE;
-    my @pdb_id_list_tmp = @{ $_[0] };
-
-    # do dssp mode
+    `touch $dssp_file`;
+    my @pdb_id_list_tmp = ();
+    push @pdb_id_list_tmp,$_[0];
 
     # files suchen nach pdb ids
-    my $array_ref = getDSSPFiles( \@pdb_id_list );
-@file_protein_list = @{$array_ref};
+    my $array_ref = getDSSPFiles( \@pdb_id_list_tmp );
+    @file_protein_list = @$array_ref;
 
-# files einlesen
-foreach (@file_protein_list) {
-    my $reference       = '';
-    my $source          = '';
-    my $aa_sequence     = ();
-    my $sec_sequence    = ();
-    my $istable         = 0;
-    my $pdbid           = '';
-    my @aa_sequences    = ();
-    my @sec_sequences   = ();
-    my $last_line       = '';
-    my @id_seq          = ();
-    my $seq_break_count = 0;
-    my $last_seq_id     = '';
+    # files einlesen
+    foreach (@file_protein_list) {
+        my $reference       = '';
+        my $source          = '';
+        my $aa_sequence     = ();
+        my $sec_sequence    = ();
+        my $istable         = 0;
+        my $pdbid           = '';
+        my @aa_sequences    = ();
+        my @sec_sequences   = ();
+        my $last_line       = '';
+        my @id_seq          = ();
+        my $seq_break_count = 0;
+        my $last_seq_id     = '';
 
-    open FILE, "<$_" or die $!;
+        open FILE, "<$_" or die $!;
 
-    #do processing
-    while ( my $line = <FILE> ) {
+        #do processing
+        while ( my $line = <FILE> ) {
 
-        #Referenz:
-        if ( $line =~ m/^REFERENCE (.*).$/ ) {
-            $reference .= $1;
-        }
-
-        #Source:
-        if ( $line =~ m/^SOURCE    (.*).$/ ) {
-            $source .= $1;
-        }
-
-        #Header:
-        if ( $line =~ m/^HEADER    .*(\w{4,})\s+.$/ ) {
-            $pdbid = $1;
-        }
-
-        #hinzufügen von aa_sequenz und sec_sequenz:
-        if ( $istable && $line =~ m/^.{13}([A-Z])..([A-Z| ])/ ) {
-            my $tmp_sec = '';
-
-            if ( $2 eq 'E' || $2 eq 'B' ) {
-                $tmp_sec = 'E';
+            #Referenz:
+            if ( $line =~ m/^REFERENCE (.*).$/ ) {
+                $reference .= $1;
             }
-            elsif ( $2 eq 'G' || $2 eq 'H' ) {
-                $tmp_sec = 'H';
+
+            #Source:
+            if ( $line =~ m/^SOURCE    (.*).$/ ) {
+                $source .= $1;
             }
-            else {
-                $tmp_sec = 'C';
+
+            #Header:
+            if ( $line =~ m/^HEADER    .*(\w{4,})\s+.$/ ) {
+                $pdbid = $1;
             }
-            $aa_sequence  .= $1;
-            $sec_sequence .= $tmp_sec;
+
+            #hinzufügen von aa_sequenz und sec_sequenz:
+            if ( $istable && $line =~ m/^.{13}([A-Z])..([A-Z| ])/ ) {
+                my $tmp_sec = '';
+
+                if ( $2 eq 'E' || $2 eq 'B' ) {
+                    $tmp_sec = 'E';
+                }
+                elsif ( $2 eq 'G' || $2 eq 'H' ) {
+                    $tmp_sec = 'H';
+                }
+                else {
+                    $tmp_sec = 'C';
+                }
+                $aa_sequence  .= $1;
+                $sec_sequence .= $tmp_sec;
+            }
+            if ( $line =~ m/!\*/ ) {
+                push @aa_sequences,  $aa_sequence;
+                push @sec_sequences, $sec_sequence;
+                $aa_sequence  = '';
+                $sec_sequence = '';
+                $last_line =~ /^.{11}(\w)/;
+                $last_seq_id = $1;
+            }
+
+            #erkennung der tabelle:
+            if ( $line =~ m/^\s+#/ ) {
+                $istable = 1;
+            }
+
+            # pdbid einfügen
+            if ( $last_line =~ m/^.{11}\s.+!\*/ ) {
+
+                # für new chain
+                $seq_break_count = 0;
+                push @id_seq, "$pdbid$last_seq_id";
+            }
+            elsif ( $last_line =~ m/^.{11}\s.+! / ) {
+
+                # für chainbreak
+                #my $tmp_seq_break_count = '';
+                #$tmp_seq_break_count = sprintf ("%02d",int($seq_break_count));
+                push @id_seq, "$pdbid$last_seq_id";
+
+                #$seq_break_count++;
+            }
+            $last_line = $line;
         }
-        if ( $line =~ m/!\*/ ) {
-            push @aa_sequences,  $aa_sequence;
-            push @sec_sequences, $sec_sequence;
-            $aa_sequence  = '';
-            $sec_sequence = '';
-            $last_line =~ /^.{11}(\w)/;
-            $last_seq_id = $1;
-        }
 
-        #erkennung der tabelle:
-        if ( $line =~ m/^\s+#/ ) {
-            $istable = 1;
-        }
-
-        # pdbid einfügen
-        if ( $last_line =~ m/^.{11}\s.+!\*/ ) {
-
-            # für new chain
-            $seq_break_count = 0;
-            push @id_seq, "$pdbid$last_seq_id";
-        }
-        elsif ( $last_line =~ m/^.{11}\s.+! / ) {
-
-            # für chainbreak
-            #my $tmp_seq_break_count = '';
-            #$tmp_seq_break_count = sprintf ("%02d",int($seq_break_count));
-            push @id_seq, "$pdbid$last_seq_id";
-
-            #$seq_break_count++;
-        }
-        $last_line = $line;
-    }
-
-    # letzte sequenz in arrays
-    push @aa_sequences,  $aa_sequence;
-    push @sec_sequences, $sec_sequence;
-    $last_line =~ /^.{11}(\w)/;
-    push @id_seq, "$pdbid$1";
-    my %hash = ();
-    $hash{aa_sequences}  = \@aa_sequences;
-$hash{sec_sequences} = \@sec_sequences;
+        # letzte sequenz in arrays
+        push @aa_sequences,  $aa_sequence;
+        push @sec_sequences, $sec_sequence;
+        $last_line =~ /^.{11}(\w)/;
+        push @id_seq, "$pdbid$1";
+        my %hash = ();
+        $hash{aa_sequences}  = \@aa_sequences;
+        $hash{sec_sequences} = \@sec_sequences;
         $hash{id_seq}        = \@id_seq;
-    return \%hash;
+        return \%hash;
     }
 }
 
@@ -411,7 +414,6 @@ if ( $mode eq 'cmp' ) {
         }
     }
 
-
     close PDB;
     open DSSP, "<dssp_result.txt" or die "fehler in dssp_result\n";
     $last_pdb_id = '';
@@ -427,19 +429,19 @@ if ( $mode eq 'cmp' ) {
 
     my @inconsistent_pdb_ids = ();
 
-    my $string1 ='';
-    my $string2 ='';
+    my $string1 = '';
+    my $string2 = '';
 
-    foreach my $k (sort keys %pdb_hash) {
-        if (exists $pdb_hash{$k}&& exists $dssp_hash{$k}) {
+    foreach my $k ( sort keys %pdb_hash ) {
+        if ( exists $pdb_hash{$k} && exists $dssp_hash{$k} ) {
             $string1 = $pdb_hash{$k};
             $string2 = $dssp_hash{$k};
-            if ($string1 ne $string2 ) {
-                push @inconsistent_pdb_ids,$k;
+            if ( $string1 ne $string2 ) {
+                push @inconsistent_pdb_ids, $k;
             }
         }
         else {
-            push @inconsistent_pdb_ids,$k;
+            push @inconsistent_pdb_ids, $k;
         }
         $string1 = '';
         $string2 = '';
@@ -447,11 +449,10 @@ if ( $mode eq 'cmp' ) {
 
     open PRINTFILE, ">$dssp_file" or die "nicht möglich";
     foreach my $x (@inconsistent_pdb_ids) {
-        print PRINTFILE $x,"\n";
+        print PRINTFILE $x, "\n";
     }
     close PRINTFILE;
 }
-
 
 if ( $pdb ne '' ) {
     print "pdb enthalten";
@@ -495,33 +496,33 @@ sub getFiles {
             #         print FH $FILE;
             downloadPDB($_);
 
-            # konvertieren
-            #         `$dssp_bin -i pdb-download/pdb$_.pdb -o dssp-converted/$_.dssp`;
-            #         push @file_list,"dssp-converted/$_.dssp";
-            #         close (FH);
+      # konvertieren
+      #         `$dssp_bin -i pdb-download/pdb$_.pdb -o dssp-converted/$_.dssp`;
+      #         push @file_list,"dssp-converted/$_.dssp";
+      #         close (FH);
             convertPDBtoDSSP( "pdb-download/pdb$_.pdb", $_ );
         }
     }
     return \@file_list;
-    }
+}
 
-    sub getPDBFiles {
-        my @pdb_id_list_tmp = @{ $_[0] };
-        my @file_list       = ();
+sub getPDBFiles {
+    my @pdb_id_list_tmp = @{ $_[0] };
+    my @file_list       = ();
 
-        foreach (@pdb_id_list_tmp) {
-            my $currentpath = `find $pdb_folder -name pdb$_.ent -type f`;
-            if ( $currentpath ne '' ) {
-                push @file_list, $currentpath;
-            }
-            else {
-
-                # runterladen
-                downloadPDB($_);
-                push @file_list, "pdb-download/pdb$_.pdb";
-            }
+    foreach (@pdb_id_list_tmp) {
+        my $currentpath = `find $pdb_folder -name pdb$_.ent -type f`;
+        if ( $currentpath ne '' ) {
+            push @file_list, $currentpath;
         }
-        return \@file_list;
+        else {
+
+            # runterladen
+            downloadPDB($_);
+            push @file_list, "pdb-download/pdb$_.pdb";
+        }
+    }
+    return \@file_list;
 }
 
 sub getDSSPFiles {
@@ -543,7 +544,7 @@ sub getDSSPFiles {
             }
             else
 
-            # wenn keine pdb gefunden
+              # wenn keine pdb gefunden
             {
                 downloadPDB($_);
                 convertPDBtoDSSP( "pdb-download/pdb$_.pdb", $_ );
@@ -552,22 +553,22 @@ sub getDSSPFiles {
         }
     }
     return \@file_list;
-    }
+}
 
-    # runterladen
-    # arguments =
-    # 1 => pdb-id
-    sub downloadPDB {
-        my $FILE = get("http://www.rcsb.org/pdb/files/pdb$_[0].pdb");
-        open( FH, ">pdb-download/pdb$_[0].pdb" );
-        print FH $FILE;
-        close FH;
-    }
+# runterladen
+# arguments =
+# 1 => pdb-id
+sub downloadPDB {
+    my $FILE = get("http://www.rcsb.org/pdb/files/pdb$_[0].pdb");
+    open( FH, ">pdb-download/pdb$_[0].pdb" );
+    print FH $FILE;
+    close FH;
+}
 
-    # dssp benutzen
-    # arguments =
-    # 1 => inpute-file pdb
-    # 2 => pdb-id
-    sub convertPDBtoDSSP {
-        `$dssp_bin -i $_[0] -o dssp-converted/$_[1].dssp`;
-    }
+# dssp benutzen
+# arguments =
+# 1 => inpute-file pdb
+# 2 => pdb-id
+sub convertPDBtoDSSP {
+    `$dssp_bin -i $_[0] -o dssp-converted/$_[1].dssp`;
+}
