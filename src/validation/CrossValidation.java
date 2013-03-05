@@ -4,8 +4,9 @@ import gorpack.Sequence;
 import gorpack.Sequence2;
 import gorpack.TrainPredict2;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class CrossValidation {
 	public int identifier;
@@ -39,23 +40,35 @@ public class CrossValidation {
 		this.trainn = trainn;
 	}
 
-	// TODO unterschiedliche varianten für konstruktor
-
 	// alle daten in package --> n zählen oder size daten
-	// TODO anzahl der elemente in extra methode - polymorphie
 	public void makeDataPackage() {
 		daten = dataset.getDataPackage();
 	}
 	
-	public void oneWholeCV() {
+	public void oneWholeCV(boolean gor3) {
 		for (int i = 0; i<n;i++){
-			ds_set.add(oneIteration(i));
+			ds_set.add(oneIteration(i,gor3));
+			ds_set.get(i).calcSummaryStatistics();
 		}
-		System.out.println("ende");
+		
+	}
+	
+	public void repeatedCV(int anzahlshuffles,boolean gor3,String filename,String filename2){
+		for (int i = 0; i<anzahlshuffles;i++){
+			Collections.shuffle(daten);
+			oneWholeCV(gor3);
+			try {
+				createSummaries("r"+i+"_"+filename);
+				createDetailedSummaries("r"+i+"_"+filename2);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			ds_set.clear();
+		}
 	}
 
 	//iteration geht von 0-9 bei n = 10
-	public DataSet oneIteration(int iteration) {
+	public DataSet oneIteration(int iteration, boolean gor3) {
 		int size = daten.size();
 		int chunksize = (int)(Math.abs((double)size/n)*trainn);
 		ArrayList<Data> training_set = new ArrayList<Data>();
@@ -91,7 +104,7 @@ public class CrossValidation {
 		//für return sequence2 nehmen
 		Sequence2[] returnarray = new Sequence2[test_set.size()];
 		
-		returnarray = TrainPredict2.predictTrain(test, model, false);
+		returnarray = TrainPredict2.predictTrain(test, model, gor3);
 //		System.out.println(returnarray[2]);
 		DataSet tmp = new DataSet();
 		tmp.toString();
@@ -115,5 +128,22 @@ public class CrossValidation {
 		ds.addInputChunk(s.getid(), s.getRs(), s.getss(), s.getps());
 	}
 	
+	public void createSummaries(String filename) throws IOException{
+		CreateSummary csum = new CreateSummary();
+		int i = 0;
+		for (DataSet ds : ds_set){
+			i++;
+			csum.createSummaryFileTxt(ds, String.valueOf(i) + filename);
+		}
+	}
+	
+	public void createDetailedSummaries(String filename) throws IOException {
+		CreateSummary csum = new CreateSummary();
+		int i = 0;
+		for (DataSet ds : ds_set){
+			i++;
+			csum.createDetailedFileTxt(ds.getDataPackage(),	i+filename, false);
+		}
+	}
 //	public void makeSummaries
 }

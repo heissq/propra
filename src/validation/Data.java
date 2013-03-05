@@ -321,4 +321,8 @@ public class Data {
 	public boolean containsSomeResult(){
 		return result.q3 != 0 ? true : false;
 	}
+	
+	public boolean containsCompleteResults(){
+		return (result.q3 != 0 && result.sov != 0)? true : false;
+	}
 }

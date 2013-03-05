@@ -113,9 +113,12 @@ public class Gor1Model implements GorModel {
 		double[] p = new double[4];
 		double[] scores = new double[3];
 		for (int i = 0; i < windowsize; i++) {
-			scores[0] += matrix[0][ps[pos + i - whalf]][i];
-			scores[1] += matrix[1][ps[pos + i - whalf]][i];
-			scores[2] += matrix[2][ps[pos + i - whalf]][i];
+			// abfangen von as gleich x
+			if (ps[pos + i - whalf] < 20) {
+				scores[0] += matrix[0][ps[pos + i - whalf]][i];
+				scores[1] += matrix[1][ps[pos + i - whalf]][i];
+				scores[2] += matrix[2][ps[pos + i - whalf]][i];
+			}
 		}
 		p[0] = (Math.exp(scores[0]) / (1.0 + Math.exp(scores[0])));
 		p[1] = (Math.exp(scores[1]) / (1.0 + Math.exp(scores[1])));

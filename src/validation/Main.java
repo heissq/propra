@@ -11,12 +11,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 public class Main {
-	public static String predictions_file;
-	public static String dssp_file;
-	public static String summary_file;
-	public static String detailed_file;
-	public static int iterations_cross_validation;
-	public static boolean is_cross_validation;
 
 	/**
 	 * @param args
@@ -117,13 +111,16 @@ public class Main {
 			
 			CreateSummary csum = new CreateSummary("example",detailed_file);
 			csum.createDetailedFileTxt(data_package, detailed_file, false);
+			csum.createSummaryFileTxt(dataset, summary_file);
 		} else {
 			//Cross validation
 			/**
 			 * letzter parameter gibt an wie viele k als testset benutzt werden sollen
 			 */
 			CrossValidation cv = new CrossValidation(dataset,iterations_cross_validation,1);
-			cv.oneWholeCV();
+			// true wenn gor3 benutzt werden soll sonst nur gor1
+			// und gor1 noch fehler...
+			cv.repeatedCV(1, false, summary_file,detailed_file);
 		}
 	}
 }
