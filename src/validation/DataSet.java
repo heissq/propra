@@ -10,12 +10,7 @@ public class DataSet {
 
 	// daten als datenpaket in dataset gespeichert
 	// bestehend aus daten
-	private static ArrayList<Data> daten = new ArrayList<Data>();
-
-	public DataSet() {
-		predictions_filename = Main.predictions_file;
-		dssp_filename = Main.dssp_file;
-	}
+	private ArrayList<Data> daten = new ArrayList<Data>();
 	
 	public void setFiles(String pred,String dssp) {
 		predictions_filename = pred;
@@ -44,6 +39,7 @@ public class DataSet {
 		}
 
 		// wenn nicht gefunden neues element anlegen
+		
 		daten.add(new Data(id, rs, ps, as));
 		isempty = false;
 	}
@@ -51,7 +47,9 @@ public class DataSet {
 	@Override
 	public String toString() {
 		return "file with training data = " + dssp_filename
-				+ "; file with predictions = " + predictions_filename;
+				+ "; file with predictions = " + predictions_filename +"\nNumberOfData = " + daten.size() + 
+				"\nValidierungsDatenenthalten?:" 
+				+ (daten.size() > 0 ? daten.get(0).containsSomeResult(): "");
 	}
 
 	public void printeverything() {

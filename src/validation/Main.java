@@ -15,8 +15,8 @@ public class Main {
 	public static String dssp_file;
 	public static String summary_file;
 	public static String detailed_file;
-	public static DataSet dataset;
 	public static int iterations_cross_validation;
+	public static boolean is_cross_validation;
 
 	/**
 	 * @param args
@@ -30,6 +30,7 @@ public class Main {
 		String dssp_file = "dssp.txt";
 		String summary_file = "summary.txt";
 		String detailed_file = "detailed_summary.txt";
+		boolean is_cross_validation = false;
 		int iterations_cross_validation = 10;
 		DataSet dataset = new DataSet();
 
@@ -73,6 +74,8 @@ public class Main {
 		if (cmd.hasOption("cross-validation")) {
 			iterations_cross_validation = Integer.parseInt(cmd.getOptionValue("cross-validation"));
 			System.out.println(iterations_cross_validation);
+			System.out.println("is cross validation");
+			is_cross_validation = true;
 		} else {
 			System.out
 			.println("Default value = 10");
@@ -109,9 +112,18 @@ public class Main {
 		
 //		dataset.printeverything();
 //		dataset.printDataByPDBId("11asB00");
-		ArrayList<Data> data_package = dataset.getDataPackage();
-		
-		CreateSummary csum = new CreateSummary("example",detailed_file);
-		csum.createDetailedFileTxt(data_package, detailed_file, false);
+		if (!is_cross_validation) {
+			ArrayList<Data> data_package = dataset.getDataPackage();
+			
+			CreateSummary csum = new CreateSummary("example",detailed_file);
+			csum.createDetailedFileTxt(data_package, detailed_file, false);
+		} else {
+			//Cross validation
+			/**
+			 * letzter parameter gibt an wie viele k als testset benutzt werden sollen
+			 */
+			CrossValidation cv = new CrossValidation(dataset,iterations_cross_validation,1);
+			cv.oneWholeCV();
+		}
 	}
 }

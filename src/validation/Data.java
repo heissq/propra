@@ -59,17 +59,23 @@ public class Data {
 	// so sein
 	public Data(String pdbid, String rs, String ps, String as) {
 		this.pdbid = pdbid;
-		this.rs = rs;
-		this.ps = ps;
-		this.as = as;
+		if (!rs.equals(""))
+			this.rs = rs;
+		if (!ps.equals(""))
+			this.ps = ps;
+		if (!as.equals(""))
+			this.as = as;
 		result = new Result();
 
 		int count = 0;
-		while (ps.charAt(count) == '-') {
-			count++;
-		}
-		calcSOVvalues(count);
-		calcQ3values();
+		if (!ps.equals(""))
+			while (ps.charAt(count) == '-') {
+				count++;
+			}
+		if (!(rs.isEmpty() || ps.isEmpty()))
+			calcSOVvalues(count);
+		if (!(rs.isEmpty() || ps.isEmpty()))
+			calcQ3values();
 	}
 
 	// hier die ergebnisse mit einfügen
@@ -310,5 +316,9 @@ public class Data {
 			printSOVscore();
 		if (result.q3 != -1)
 			printQ3();
+	}
+	
+	public boolean containsSomeResult(){
+		return result.q3 != 0 ? true : false;
 	}
 }

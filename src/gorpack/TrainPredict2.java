@@ -88,7 +88,7 @@ public class TrainPredict2 {
 		}
 	}
 
-	public Sequence2[] predictTrain(Sequence[] topredict, Sequence[] tomodel, boolean gor3) throws FileNotFoundException {
+	public static Sequence2[] predictTrain(Sequence[] topredict, Sequence[] tomodel, boolean gor3){
 		Sequence2[] p = new Sequence2[topredict.length];
 		// String p =
 		// "/home/proj/biocluster/praktikum/bioprakt/Data/GOR/CB513DSSP.db";
