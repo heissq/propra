@@ -32,7 +32,6 @@ public class Main {
 		Options opt = new Options();
 		opt.addOption("", "p", true, "<predictions>");
 		opt.addOption("", "r", true, "<dssp-file>");
-		//FIXME option nur angeben aber keine extra option... suchen nach wie geht das...
 		opt.addOption("", "f", true, "<txt|html>");
 		opt.addOption("", "s", true, "<summary file>");
 		opt.addOption("", "d", true, "<detailed file>");
@@ -102,7 +101,6 @@ public class Main {
 		dataset.calcSummaryStatistics();
 		if (!is_cross_validation) {
 			ArrayList<Data> data_package = dataset.getDataPackage();
-			//TODO id von createsummary entfernen da momentan total nutzlos
 			CreateSummary csum = new CreateSummary("example",detailed_file);
 
 			if (is_html){
@@ -120,7 +118,7 @@ public class Main {
 			CrossValidation cv = new CrossValidation(dataset,iterations_cross_validation,1);
 			// true wenn gor3 benutzt werden soll sonst nur gor1
 			// und gor1 noch fehler...
-			cv.repeatedCV(1, false, summary_file,detailed_file);
+			cv.repeatedCV(1, false, summary_file,detailed_file,is_html);
 		}
 	}
 }

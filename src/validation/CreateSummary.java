@@ -90,15 +90,39 @@ public class CreateSummary {
 			for (Data data : daten) {
 				// erste zeile identifier
 				//FIXME NaN abfangen
+				
+				double q3 = data.getResult().q3;
+				double qh = data.getResult().qh;
+				if(Double.isNaN(qh) || Double.isInfinite(qh) || qh == -1)
+					qh = 0;
+				double qe = data.getResult().qe;
+				if(Double.isNaN(qe) || Double.isInfinite(qe) || qe == -1)
+					qe = 0;
+				double qc = data.getResult().qc;
+				if(Double.isNaN(qc) || Double.isInfinite(qc) || qc == -1)
+					qc = 0;
+				double sov = data.getResult().sov;
+				
+				double sov_h = data.getResult().sov_h;
+				if(Double.isNaN(sov_h) || Double.isInfinite(sov_h))
+					sov_h = 0;
+				double sov_e = data.getResult().sov_e;
+				if(Double.isNaN(sov_e) || Double.isInfinite(sov_e))
+					sov_e = 0;
+				double sov_c = data.getResult().sov_c;
+				if(Double.isNaN(sov_c) || Double.isInfinite(sov_c))
+					sov_c = 0;
+				
+				
 				out.write(">" + data.pdbid + " "
-						+ df.format(data.getResult().q3) + " "
-						+ df.format(data.getResult().sov) + " "
-						+ df.format(data.getResult().qh) + " "
-						+ df.format(data.getResult().qe) + " "
-						+ df.format(data.getResult().qc) + " "
-						+ df.format(data.getResult().sov_h) + " "
-						+ df.format(data.getResult().sov_e) + " "
-						+ df.format(data.getResult().sov_c) + "\n");
+						+ df.format(q3) + " "
+						+ df.format(sov) + " "
+						+ df.format(qh) + " "
+						+ df.format(qe) + " "
+						+ df.format(qc) + " "
+						+ df.format(sov_h) + " "
+						+ df.format(sov_e) + " "
+						+ df.format(sov_c) + "\n");
 
 				// amino acid chain
 				out.write("AS " + data.getAs() + "\n");
@@ -132,9 +156,6 @@ public class CreateSummary {
 			if (Double.isNaN(sov_mean))
 				sov_mean = 0;
 
-			
-			
-			
 			out.write("Anzahl an Sequenzen analysiert = " + ds.getListSize()
 					+ "\n");
 			out.write("Max: Q3 = " + df.format(ds.getMax_q3()) + " | SOV = "
