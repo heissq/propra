@@ -262,36 +262,34 @@ sub processChains {
 
 if ( $mode eq 'dssp' ) {
     `touch $dssp_file`;
-
-    open FILEPRINT, ">>$dssp_file"
-      or die "kann datei $dssp_file nicht erstellen\n";
-
-    foreach (@pdb_id_list)
-    {
+    open FILEPRINT, ">$dssp_file";
+    foreach (@pdb_id_list) {
         print $_;
-    my $hash_ref = processDSSP($_);
+        my $hash_ref = processDSSP($_);
 
-    # in file einlesen die als dssp paramter angeben ist
-    my %hash          = %{$hash_ref};
-    my @aa_sequences  = @{ $hash{aa_sequences} };
-    my @sec_sequences = @{ $hash{sec_sequences} };
-    my @id_seq        = @{ $hash{id_seq} };
+        # in file einlesen die als dssp paramter angeben ist
+        my %hash          = %{$hash_ref};
+        my @aa_sequences  = @{ $hash{aa_sequences} };
+        my @sec_sequences = @{ $hash{sec_sequences} };
+        my @id_seq        = @{ $hash{id_seq} };
 
-    for my $i ( 0 .. $#aa_sequences ) {
-        print FILEPRINT "\> $id_seq[$i]\n";
-        print FILEPRINT "AS $aa_sequences[$i]\n";
-        print FILEPRINT "SS $sec_sequences[$i]\n\n";
+        for my $i ( 0 .. $#aa_sequences ) {
+            print FILEPRINT "\> $id_seq[$i]\n";
+            print FILEPRINT "AS $aa_sequences[$i]\n";
+            print FILEPRINT "SS $sec_sequences[$i]\n\n";
+        }
     }
-    }
+    close FILEPRINT;
 }
 
 sub processDSSP {
-    `touch $dssp_file`;
+    print $_[0];
     my @pdb_id_list_tmp = ();
-    push @pdb_id_list_tmp,$_[0];
+    push @pdb_id_list_tmp, $_[0];
 
     # files suchen nach pdb ids
     my $array_ref = getDSSPFiles( \@pdb_id_list_tmp );
+    print @$array_ref;
     @file_protein_list = @$array_ref;
 
     # files einlesen
@@ -392,8 +390,7 @@ sub processDSSP {
 }
 
 if ( $mode eq 'cmp' ) {
-    open FILE, ">$dssp_file" or die $!;
-    close FILE;
+    `touch $dssp_file`;
 
     # do cmp mode
     print "pdb cmp\n";
@@ -406,8 +403,8 @@ if ( $mode eq 'cmp' ) {
     open PDB, "<pdb_result.txt" or die "fehler in pdb_result\n";
     my $last_pdb_id = '';
     while (<PDB>) {
-        if ( $_ =~ /^\> (\w{4,5})/ ) {
-            $last_pdb_id = uc($1);
+        if ( $_ =~ /^\> ?(\w{4,5})/ ) {
+            $last_pdb_id = lc($1);
         }
         if ( $_ =~ /^\w\w (.*)/ ) {
             $pdb_hash{$last_pdb_id} = $1;
@@ -418,8 +415,8 @@ if ( $mode eq 'cmp' ) {
     open DSSP, "<dssp_result.txt" or die "fehler in dssp_result\n";
     $last_pdb_id = '';
     while (<DSSP>) {
-        if ( $_ =~ /^\> (\w{4,5})/ ) {
-            $last_pdb_id = uc($1);
+        if ( $_ =~ /^\> ?(\w{4,5})/ ) {
+            $last_pdb_id = lc($1);
         }
         if ( $_ =~ /^\w\w (.*)/ ) {
             $dssp_hash{$last_pdb_id} = $1;
