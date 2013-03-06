@@ -96,13 +96,18 @@ public class Main {
 			}
 		}
 
-		ReadFromFiles.readToData(predictions_file, dataset);
-		ReadFromFiles.readToData(dssp_file, dataset);
+		ReadFromFiles.readToData(predictions_file, dataset,false);
+		ReadFromFiles.readToData(dssp_file, dataset,true);
 		dataset.calcSummaryStatistics();
 		if (!is_cross_validation) {
 			ArrayList<Data> data_package = dataset.getDataPackage();
 			CreateSummary csum = new CreateSummary("example",detailed_file);
-
+			
+			//berechnung der werte...
+			dataset.calcQ3values();
+			dataset.calcSOVvalues(8);
+			dataset.calcSummaryStatistics();
+			
 			if (is_html){
 				csum.createDetailedFileHtml(data_package, detailed_file, false);
 				csum.createSummaryFileHtml(dataset, summary_file);

@@ -72,9 +72,9 @@ public class Data {
 			while (ps.charAt(count) == '-') {
 				count++;
 			}
-		if (!(rs.isEmpty() || ps.isEmpty()))
+		if (!((rs.isEmpty() || ps.isEmpty())))
 			calcSOVvalues(count);
-		if (!(rs.isEmpty() || ps.isEmpty()))
+		if (!((rs.isEmpty() || ps.isEmpty())))
 			calcQ3values();
 	}
 
