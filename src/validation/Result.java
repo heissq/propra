@@ -24,4 +24,9 @@ public class Result {
 		this.q3 = q3;
 		this.sov = sov;
 	}
+	
+	@Override
+	public String toString() {
+		return q3+" "+sov+"\n";
+	}
 }

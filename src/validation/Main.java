@@ -96,9 +96,11 @@ public class Main {
 			}
 		}
 
+		//einlesen der daten
 		ReadFromFiles.readToData(predictions_file, dataset,false);
 		ReadFromFiles.readToData(dssp_file, dataset,true);
-		dataset.calcSummaryStatistics();
+		
+		
 		if (!is_cross_validation) {
 			ArrayList<Data> data_package = dataset.getDataPackage();
 			CreateSummary csum = new CreateSummary("example",detailed_file);

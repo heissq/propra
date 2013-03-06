@@ -105,7 +105,7 @@ public class Data {
 		// ist aber nur zu testzwecken also nicht zwingend nötig
 		return "ID: " + pdbid + "\n" + "amino acid:\n" + as
 				+ "\nsecondary_structure:\n" + rs
-				+ "\npredicted secondary structure:\n" + ps;
+				+ "\npredicted secondary structure:\n" + ps + "\nQ3 und SOV: "+result;
 	}
 
 	public void calcQ3values() {

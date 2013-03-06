@@ -50,7 +50,6 @@ public class CrossValidation {
 			ds_set.add(oneIteration(i, gor3));
 			ds_set.get(i).calcSummaryStatistics();
 		}
-
 	}
 
 	public void repeatedCV(int anzahlshuffles, boolean gor3, String filename,
@@ -61,8 +60,8 @@ public class CrossValidation {
 			try {
 				if (is_html) {
 				}
-				createSummaries("r" + i + "_" + filename,is_html);
-				createDetailedSummaries("r" + i + "_" + filename2,is_html);
+				createSummaries("r" + i + "_" + filename, is_html);
+				createDetailedSummaries("r" + i + "_" + filename2, is_html);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -110,7 +109,7 @@ public class CrossValidation {
 
 		returnarray = TrainPredict2.predictTrain(test, model, gor3);
 		// System.out.println(returnarray[2]);
-		DataSet tmp = new DataSet();
+		DataSet tmp = new DataSet("Iteration = "+String.valueOf(iteration+1));
 		tmp.toString();
 		for (Sequence2 sequence2 : returnarray) {
 			convertSequenceToResult(sequence2, tmp);
@@ -137,14 +136,18 @@ public class CrossValidation {
 			throws IOException {
 		CreateSummary csum = new CreateSummary();
 		int i = 0;
+		String tmp = filename.replaceAll(".txt", ".html");
 		for (DataSet ds : ds_set) {
 			i++;
-			if (is_html)
-			{
-				String tmp = filename.replaceAll(".txt", ".html");
-				csum.createSummaryFileHtml(ds, String.valueOf(i) + tmp);
+			boolean printeddebug = false;
+			if (is_html) {
+				if (!printeddebug) {
+					csum.createSummaryFileHtml(ds_set,tmp,n);
+					csum.createCVTableData(ds_set, filename+".txt");
+				}
+				printeddebug = true;
 			}
-				
+
 			else
 				csum.createSummaryFileTxt(ds, String.valueOf(i) + filename);
 		}
@@ -156,13 +159,12 @@ public class CrossValidation {
 		int i = 0;
 		for (DataSet ds : ds_set) {
 			i++;
-			if (is_html)
-			{
+			if (is_html) {
 				String tmp = filename.replaceAll(".txt", ".html");
 				csum.createDetailedFileHtml(ds.getDataPackage(), i + tmp, false);
-			}
-			else
-				csum.createDetailedFileTxt(ds.getDataPackage(), i + filename, false);
+			} else
+				csum.createDetailedFileTxt(ds.getDataPackage(), i + filename,
+						false);
 		}
 	}
 	// public void makeSummaries
