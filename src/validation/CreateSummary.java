@@ -487,6 +487,15 @@ public class CreateSummary {
 		}
 	}
 
+	/**
+	 * Gibt daten von CV für gnuplot aus
+	 * 
+	 * @param ds_set
+	 *            set von dataset containing daten
+	 * @param filename
+	 *            name wo zu speichern
+	 * @throws IOException
+	 */
 	public void createCVTableData(ArrayList<DataSet> ds_set, String filename)
 			throws IOException {
 		try {
@@ -496,7 +505,7 @@ public class CreateSummary {
 			out.write("k\tq3\tsov\tqh\tqe\tqc\tsovh\tsove\tsovc\tq3_stdv\tsov_stdv\n");
 
 			int count = 1;
-			
+
 			for (DataSet ds : ds_set) {
 
 				double q3_mean = ds.getMean_q3();
@@ -606,11 +615,13 @@ public class CreateSummary {
 				if (Double.isNaN(sovc_min))
 					sovc_min = 0;
 
-				out.write(count+"\t"+df.format(q3_mean) + "\t" + df.format(sov_mean) + "\t" + df.format(qh_mean) + "\t"
-						+ df.format(qe_mean) + "\t" + df.format(qc_mean) + "\t" + df.format(sovh_mean) + "\t"
-						+ df.format(sove_mean) + "\t" + df.format(sovc_mean) + "\t" + df.format(ds.getStdv_q3())
-						+ "\t" + df.format(ds.getStdv_sov()) + "\n");
-
+				out.write(count + "\t" + df.format(q3_mean) + "\t"
+						+ df.format(sov_mean) + "\t" + df.format(qh_mean)
+						+ "\t" + df.format(qe_mean) + "\t" + df.format(qc_mean)
+						+ "\t" + df.format(sovh_mean) + "\t"
+						+ df.format(sove_mean) + "\t" + df.format(sovc_mean)
+						+ "\t" + df.format(ds.getStdv_q3()) + "\t"
+						+ df.format(ds.getStdv_sov()) + "\n");
 				count++;
 			}
 
@@ -620,4 +631,54 @@ public class CreateSummary {
 			System.err.println("Error: " + e.getMessage());
 		}
 	}
+
+	/**
+	 * Gibt daten von CV für gnuplot aus
+	 * 
+	 * @param ds_set
+	 *            set von dataset containing daten
+	 * @param filename
+	 *            name wo zu speichern
+	 * @throws IOException
+	 */
+	public void createTableData(DataSet ds, String filename,boolean append)
+			throws IOException {
+		try {
+			// Create file
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename,append));
+			int count = 1;
+			DecimalFormat df = new DecimalFormat("##.###");
+			ArrayList<Data> daten = ds.getDataPackage();
+			out.write("n\tvalues\ttype\n");
+
+			for (Data data : daten) {
+				
+				double q3 = data.getResult().q3;
+				double qh = data.getResult().qh;
+				double qe = data.getResult().qe;
+				double qc = data.getResult().qc;
+				double sov = data.getResult().sov;
+				double sovh = data.getResult().sov_h;
+				double sove = data.getResult().sov_e;
+				double sovc = data.getResult().sov_c;
+				
+				out.write(count+"\t"+(!Double.isNaN(q3) ? df.format(q3) : "NaN")+"\ta\tq\n");
+				out.write(count+"\t"+(!Double.isNaN(qh) ? df.format(qh) : "NaN")+"\th\tq\n");
+				out.write(count+"\t"+(!Double.isNaN(qe) ? df.format(qe) : "NaN")+"\te\tq\n");
+				out.write(count+"\t"+(!Double.isNaN(qc) ? df.format(qc) : "NaN")+"\tc\tq\n");
+				out.write(count+"\t"+(!Double.isNaN(sov) ? df.format(sov) : "NaN")+"\ta\tsov\n");
+				out.write(count+"\t"+(!Double.isNaN(sovh) ? df.format(sovh) : "NaN")+"\th\tsov\n");
+				out.write(count+"\t"+(!Double.isNaN(sove) ? df.format(sove) : "NaN")+"\te\tsov\n");
+				out.write(count+"\t"+(!Double.isNaN(sovc) ? df.format(sovc) : "NaN")+"\tc\tsov\n");
+				count++;
+			}
+			
+			// Close the output stream
+			out.close();
+		} catch (Exception e) {// Catch exception if any
+			System.err.println("Error: ");
+			e.printStackTrace();
+		}
+	}
+
 }

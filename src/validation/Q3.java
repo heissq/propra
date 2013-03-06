@@ -21,14 +21,6 @@ public class Q3 {
 	public Q3(String observed, String predicted) {
 		rs = observed;
 		ps = predicted;
-		// counter = 0;
-		// counterc = 0;
-		// countercc = 0;
-		// countere = 0;
-		// counteree = 0;
-		// counterh = 0;
-		// counterhh = 0;
-		q3result = -1;
 		calcQ3();
 	}	
 

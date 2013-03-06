@@ -12,8 +12,10 @@ public class CrossValidation {
 	public int identifier;
 	private int n;
 	private int trainn;
+	private int shuffles;
 	private DataSet dataset;
 	private ArrayList<DataSet> ds_set = new ArrayList<DataSet>();
+	private ArrayList<ArrayList<DataSet>> ds_sets = new ArrayList<ArrayList<DataSet>>();
 
 	// variablen noch nicht sicher
 	private ArrayList<Data> daten;
@@ -38,8 +40,9 @@ public class CrossValidation {
 		this.n = n;
 		// prozentualer anteil
 		this.trainn = trainn;
+		this.shuffles = shuffles;
 	}
-
+	
 	// alle daten in package --> n zählen oder size daten
 	public void makeDataPackage() {
 		daten = dataset.getDataPackage();
@@ -65,7 +68,7 @@ public class CrossValidation {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			ds_set.clear();
+			ds_sets.add(ds_set);
 		}
 	}
 
@@ -109,7 +112,8 @@ public class CrossValidation {
 
 		returnarray = TrainPredict2.predictTrain(test, model, gor3);
 		// System.out.println(returnarray[2]);
-		DataSet tmp = new DataSet("Iteration = "+String.valueOf(iteration+1));
+		DataSet tmp = new DataSet("Iteration = "
+				+ String.valueOf(iteration + 1));
 		tmp.toString();
 		for (Sequence2 sequence2 : returnarray) {
 			convertSequenceToResult(sequence2, tmp);
@@ -142,14 +146,29 @@ public class CrossValidation {
 			boolean printeddebug = false;
 			if (is_html) {
 				if (!printeddebug) {
-					csum.createSummaryFileHtml(ds_set,tmp,n);
-					csum.createCVTableData(ds_set, filename+".txt");
+					csum.createSummaryFileHtml(ds_set, tmp, n);
+					csum.createCVTableData(ds_set, filename + ".txt");
+					// TODO .html rausschneiden oder extra parameter in
+					// commandline input
 				}
 				printeddebug = true;
 			}
 
 			else
 				csum.createSummaryFileTxt(ds, String.valueOf(i) + filename);
+		}
+	}
+	
+	public void createRawDataFromRCV(String filename){
+		CreateSummary csum = new CreateSummary();
+		for (ArrayList<DataSet> ds_set : ds_sets) {
+			for (DataSet dscsum : ds_set) {
+				try {
+					csum.createTableData(dscsum, filename, true);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
