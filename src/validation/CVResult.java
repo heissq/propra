@@ -7,11 +7,11 @@ public class CVResult extends Result {
 	public CVResult() {
 	}
 
-	//TODO super(params) fehlt
-	public CVResult(String pdbid, int iteration, int iterationshuffle) {
-		super();
+	public CVResult(int iteration, int iterationshuffle, double q3, double sov,
+			double qh, double qe, double qc, double sovh, double sove,
+			double sovc) {
+		super(q3, sov, qh, qe, qc, sovh, sove, sovc);
 		identitiy.iteration = iteration;
 		identitiy.shuffle_set_iteration = iterationshuffle;
-		identitiy.pdbid = pdbid;
 	}
 }

@@ -67,7 +67,7 @@ if ( $mode eq 'pdb' ) {
 
     # do pdb mode
     my $array_ref = getPDBFiles( \@pdb_id_list );
-    `rm $dssp_file`;
+
 
     @file_protein_list = @{$array_ref};
     foreach my $file (@file_protein_list) {
@@ -85,8 +85,11 @@ if ( $mode eq 'pdb' ) {
         my $helix_chain     = ();
         my $sheet_chain     = ();
 
+        print $file;
         my $pdb_id = $file;
         $pdb_id =~ s/.*(\w{4})\.ent$/$1/;
+
+        print $pdb_id;
 
         open PDBFILE, "<$file" or die "datei nicht gefunden\n";
         while ( my $line = <PDBFILE> ) {
@@ -272,11 +275,15 @@ if ( $mode eq 'dssp' ) {
         my @aa_sequences  = @{ $hash{aa_sequences} };
         my @sec_sequences = @{ $hash{sec_sequences} };
         my @id_seq        = @{ $hash{id_seq} };
+        my @seq_lengths = @{$hash{seq_length}};
 
         for my $i ( 0 .. $#aa_sequences ) {
+            if ($seq_lengths[$i] > 40)
+            {
             print FILEPRINT "\> $id_seq[$i]\n";
             print FILEPRINT "AS $aa_sequences[$i]\n";
             print FILEPRINT "SS $sec_sequences[$i]\n\n";
+            }
         }
     }
     close FILEPRINT;
@@ -306,6 +313,7 @@ sub processDSSP {
         my @id_seq          = ();
         my $seq_break_count = 0;
         my $last_seq_id     = '';
+        my @sequence_length = ();
 
         open FILE, "<$_" or die $!;
 
@@ -363,6 +371,7 @@ sub processDSSP {
                 # für new chain
                 $seq_break_count = 0;
                 push @id_seq, "$pdbid$last_seq_id";
+                push @sequence_length, $aa_sequence.length;
             }
             elsif ( $last_line =~ m/^.{11}\s.+! / ) {
 
@@ -379,12 +388,14 @@ sub processDSSP {
         # letzte sequenz in arrays
         push @aa_sequences,  $aa_sequence;
         push @sec_sequences, $sec_sequence;
+        push @sequence_length, $aa_sequence.length;
         $last_line =~ /^.{11}(\w)/;
         push @id_seq, "$pdbid$1";
         my %hash = ();
         $hash{aa_sequences}  = \@aa_sequences;
         $hash{sec_sequences} = \@sec_sequences;
         $hash{id_seq}        = \@id_seq;
+        $hash{seq_length} = \@sequence_length;
         return \%hash;
     }
 }
@@ -516,7 +527,11 @@ sub getPDBFiles {
 
             # runterladen
             downloadPDB($_);
+            #my $filename = $_;
+            #$filename =~ s/pdb(\w+)\.pdb/$1/;
+            #convertPDBtoDSSP($_,"dssp-converted/$filename.dssp");
             push @file_list, "pdb-download/pdb$_.pdb";
+            #push @file_list, "dssp-converted/$filename.dssp";
         }
     }
     return \@file_list;

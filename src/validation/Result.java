@@ -25,6 +25,17 @@ public class Result {
 		this.sov = sov;
 	}
 	
+	public Result(double q3, double sov, double qh, double qe, double qc, double sovh, double sove, double sovc) {
+		this.q3 = q3;
+		this.qh = qh;
+		this.qe = qe;
+		this.qc = qc;
+		this.sov = sov;
+		this.sov_h = sovh;
+		this.sov_e = sove;
+		this.sov_c = sovc;
+	}
+	
 	@Override
 	public String toString() {
 		return q3+" "+sov+"\n";

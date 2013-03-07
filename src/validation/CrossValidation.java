@@ -16,6 +16,7 @@ public class CrossValidation {
 	private DataSet dataset;
 	private ArrayList<DataSet> ds_set = new ArrayList<DataSet>();
 	private ArrayList<ArrayList<DataSet>> ds_sets = new ArrayList<ArrayList<DataSet>>();
+	private ArrayList<CVResult> results = new ArrayList<CVResult>();
 
 	// variablen noch nicht sicher
 	private ArrayList<Data> daten;
@@ -42,16 +43,21 @@ public class CrossValidation {
 		this.trainn = trainn;
 		this.shuffles = shuffles;
 	}
-	
+
 	// alle daten in package --> n zählen oder size daten
 	public void makeDataPackage() {
 		daten = dataset.getDataPackage();
 	}
 
-	public void oneWholeCV(boolean gor3) {
+	public void oneWholeCV(boolean gor3, int shuffleiteration) {
 		for (int i = 0; i < n; i++) {
 			ds_set.add(oneIteration(i, gor3));
 			ds_set.get(i).calcSummaryStatistics();
+			results.add(new CVResult(i, shuffleiteration, ds_set.get(i)
+					.getMean_q3(), ds_set.get(i).getMean_sov(), ds_set.get(i)
+					.getMean_qh(), ds_set.get(i).getMean_qe(), ds_set.get(i)
+					.getMean_qc(), ds_set.get(i).getMean_sovh(), ds_set.get(i)
+					.getMean_sove(), ds_set.get(i).getMean_sovc()));
 		}
 	}
 
@@ -59,7 +65,7 @@ public class CrossValidation {
 			String filename2, boolean is_html) {
 		for (int i = 0; i < anzahlshuffles; i++) {
 			Collections.shuffle(daten);
-			oneWholeCV(gor3);
+			oneWholeCV(gor3, i);
 			try {
 				if (is_html) {
 				}
@@ -147,19 +153,17 @@ public class CrossValidation {
 			if (is_html) {
 				if (!printeddebug) {
 					csum.createSummaryFileHtml(ds_set, tmp, n);
-					csum.createCVTableData(ds_set, filename + ".txt");
+					csum.createCVTableData(ds_set,results, filename + ".txt");
 					// TODO .html rausschneiden oder extra parameter in
 					// commandline input
 				}
 				printeddebug = true;
-			}
-
-			else
+			} else
 				csum.createSummaryFileTxt(ds, String.valueOf(i) + filename);
 		}
 	}
-	
-	public void createRawDataFromRCV(String filename){
+
+	public void createRawDataFromRCV(String filename) {
 		CreateSummary csum = new CreateSummary();
 		for (ArrayList<DataSet> ds_set : ds_sets) {
 			for (DataSet dscsum : ds_set) {
@@ -186,5 +190,4 @@ public class CrossValidation {
 						false);
 		}
 	}
-	// public void makeSummaries
 }

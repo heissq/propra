@@ -492,11 +492,12 @@ public class CreateSummary {
 	 * 
 	 * @param ds_set
 	 *            set von dataset containing daten
+	 * @param results 
 	 * @param filename
 	 *            name wo zu speichern
 	 * @throws IOException
 	 */
-	public void createCVTableData(ArrayList<DataSet> ds_set, String filename)
+	public void createCVTableData(ArrayList<DataSet> ds_set, ArrayList<CVResult> results, String filename)
 			throws IOException {
 		try {
 			// Create file
