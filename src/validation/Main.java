@@ -30,6 +30,7 @@ public class Main {
 		boolean is_gnuplot = false;
 
 		int iterations_cross_validation = 10;
+		int shuffles = 1;
 		DataSet dataset = new DataSet();
 
 		Options opt = new Options();
@@ -42,6 +43,7 @@ public class Main {
 		opt.addOption("", "gor3-model", false, "<gor3-model>");
 		opt.addOption("", "cv", false, "<cross-validation>");
 		opt.addOption("", "gnu", true, "<plot-output>");
+		opt.addOption("", "n-shuffles", true, "<n of shuffles>");
 
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = parser.parse(opt, args);
@@ -98,6 +100,14 @@ public class Main {
 			System.out.println("GnuPlot Output = " + gnuoutput);
 		}
 
+		// number of shuffles
+		if (cmd.hasOption("n-shuffles")) {
+			shuffles = Integer.parseInt(cmd
+					.getOptionValue("n-shuffles"));
+			is_gnuplot = true;
+			System.out.println("GnuPlot Output = " + gnuoutput);
+		}
+		
 		// GOR3MODEL JA NEIN...
 		if (cmd.hasOption("gor3-model")) {
 			is_gor3 = true;
@@ -142,7 +152,7 @@ public class Main {
 				csum.createSummaryFileTxt(dataset, summary_file);
 			}
 			if (is_gnuplot)
-				csum.createTableData(dataset, gnuoutput, false);
+				csum.createTableData(dataset, gnuoutput, false, 1, 1);
 		} else {
 			// Cross validation
 			/**
@@ -153,9 +163,7 @@ public class Main {
 					iterations_cross_validation, 1);
 			// true wenn gor3 benutzt werden soll sonst nur gor1
 			// und gor1 noch fehler...
-			cv.repeatedCV(1, is_gor3, summary_file, detailed_file, is_html);
-			if (is_gnuplot)
-				cv.createRawDataFromRCV(gnuoutput);
+			cv.repeatedCV(shuffles, is_gor3, summary_file, detailed_file, is_html, gnuoutput);
 		}
 	}
 }

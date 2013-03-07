@@ -17,6 +17,7 @@ public class CrossValidation {
 	private ArrayList<DataSet> ds_set = new ArrayList<DataSet>();
 	private ArrayList<ArrayList<DataSet>> ds_sets = new ArrayList<ArrayList<DataSet>>();
 	private ArrayList<CVResult> results = new ArrayList<CVResult>();
+	private CVResult whole_iteration_result;
 
 	// variablen noch nicht sicher
 	private ArrayList<Data> daten;
@@ -59,6 +60,41 @@ public class CrossValidation {
 					.getMean_qc(), ds_set.get(i).getMean_sovh(), ds_set.get(i)
 					.getMean_sove(), ds_set.get(i).getMean_sovc()));
 		}
+		makeMeanValuesOfWholeIteration(shuffleiteration);
+	}
+
+	public void makeMeanValuesOfWholeIteration(int currentShuffle) {
+
+		// mean values
+		double q3 = 0;
+		double qh = 0;
+		double qe = 0;
+		double qc = 0;
+		double sov = 0;
+		double sovh = 0;
+		double sove = 0;
+		double sovc = 0;
+
+		// for q3 and sov ... TODO maybe for h,e,c too
+		// double q3stdv = 0;
+		// double sovstdv = 0;
+
+		for (CVResult cvres : results) {
+			q3 += cvres.q3;
+			qh += cvres.qh;
+			qe += cvres.qe;
+			qc += cvres.qc;
+			sov += cvres.sov;
+			sovh += cvres.sov_h;
+			sove += cvres.sov_e;
+			sovc += cvres.sov_c;
+		}
+
+		CVResult cvret = new CVResult(0, currentShuffle, q3 / results.size(),
+				sov / results.size(), qh / results.size(), qe / results.size(),
+				qc / results.size(), sovh / results.size(), sove
+						/ results.size(), sovc / results.size());
+		whole_iteration_result = cvret;
 	}
 
 	public void repeatedCV(int anzahlshuffles, boolean gor3, String filename,
@@ -75,6 +111,34 @@ public class CrossValidation {
 				e.printStackTrace();
 			}
 			ds_sets.add(ds_set);
+		}
+	}
+	
+	public void repeatedCV(int anzahlshuffles, boolean gor3, String filename,
+			String filename2, boolean is_html, String gnuoutput) {
+		
+		//file preparation
+		CreateSummary csum = new CreateSummary();
+		try {
+			csum.prepareTableDataFile(gnuoutput);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		for (int i = 0; i < anzahlshuffles; i++) {
+			Collections.shuffle(daten);
+			oneWholeCV(gor3, i);
+			try {
+				if (is_html) {
+				}
+				createSummaries("r" + i + "_" + filename, is_html);
+				createDetailedSummaries("r" + i + "_" + filename2, is_html);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			createRawDataFromRCV(gnuoutput,i);
+			ds_sets.add(ds_set);
+			ds_set.clear();
 		}
 	}
 
@@ -148,32 +212,32 @@ public class CrossValidation {
 		int i = 0;
 		String tmp = filename.replaceAll(".txt", ".html");
 		for (DataSet ds : ds_set) {
+			// für durchnummerierung
 			i++;
-			boolean printeddebug = false;
-			if (is_html) {
-				if (!printeddebug) {
-					csum.createSummaryFileHtml(ds_set, tmp, n);
-					csum.createCVTableData(ds_set,results, filename + ".txt");
-					// TODO .html rausschneiden oder extra parameter in
-					// commandline input
-				}
-				printeddebug = true;
-			} else
+			
+			if (!is_html) {
 				csum.createSummaryFileTxt(ds, String.valueOf(i) + filename);
+			}
+		}
+		if (is_html) {
+			csum.createSummaryFileHtml(ds_set, tmp, n, whole_iteration_result);
+			csum.createCVTableData(ds_set, results, filename + ".dat");
 		}
 	}
 
-	public void createRawDataFromRCV(String filename) {
+	public void createRawDataFromRCV(String filename,int shuffleiteration) {
 		CreateSummary csum = new CreateSummary();
-		for (ArrayList<DataSet> ds_set : ds_sets) {
+//		for (ArrayList<DataSet> ds_set : ds_sets) {
+		int count = 0;
 			for (DataSet dscsum : ds_set) {
 				try {
-					csum.createTableData(dscsum, filename, true);
+				csum.createTableData(dscsum, filename, true, shuffleiteration,count);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				count++;
 			}
-		}
+//		}
 	}
 
 	public void createDetailedSummaries(String filename, boolean is_html)

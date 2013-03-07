@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class CreateSummary {
 	// id
@@ -201,18 +203,79 @@ public class CreateSummary {
 			// Close the output stream
 			out.close();
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	public void createSummaryFileHtml(ArrayList<DataSet> ds_set,
-			String filename, int iterations) throws IOException {
+			String filename, int iterations, CVResult cvresult)
+			throws IOException {
 		try {
 			// Create file
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-			DecimalFormat df = new DecimalFormat("##.###");
+			DecimalFormat df = new DecimalFormat("#0.0##");
 			out.write("<html><head><title></title></head><body style=\"font-family:courier new,courier,monospace;\">");
 			out.write("<h2>" + iterations + "-fold crossvalidation</h3>");
+			out.write("<p></p>");
+			out.write("<table cellpadding=\"0\" cellspacing=\"0\" style='border: 1px solid black;' width=\"500\">"
+					+ "<caption>"
+					+ "Mean values of scores</caption>"
+					+ "<thead>"
+					+ "<tr>"
+					+ "<th scope=\"row\">"
+					+ "Scores</th>"
+					+ "<th scope=\"col\">"
+					+ "Q3</th>"
+					+ "<th scope=\"col\">"
+					+ "SOV</th>"
+					+ "</tr>"
+					+ "</thead>"
+					+ "<tbody>"
+					+ "<tr>"
+					+ "<th scope=\"row\">"
+					+ "all</th>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.q3)
+					+ "</td>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.sov)
+					+ "</td>"
+					+ "</tr>"
+					+ "<tr>"
+					+ "<th scope=\"row\">"
+					+ "H</th>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.qh)
+					+ "</td>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.sov_h)
+					+ "</td>"
+					+ "</tr>"
+					+ "<tr>"
+					+ "<th scope=\"row\">"
+					+ "E</th>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.qe)
+					+ "</td>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.sov_e)
+					+ "</td>"
+					+ "</tr>"
+					+ "<tr>"
+					+ "<th scope=\"row\">"
+					+ "C</th>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.qc)
+					+ "</td>"
+					+ "<td align=\"center\">"
+					+ df.format(cvresult.sov_c)
+					+ "</td>"
+					+ "</tr>"
+					+ "</tbody>"
+					+ "</table>"
+					+ "<p>"
+					+ "&nbsp;</p>");
+
 			for (DataSet ds : ds_set) {
 
 				double q3_mean = ds.getMean_q3();
@@ -422,7 +485,7 @@ public class CreateSummary {
 			// Close the output stream
 			out.close();
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -492,13 +555,13 @@ public class CreateSummary {
 	 * 
 	 * @param ds_set
 	 *            set von dataset containing daten
-	 * @param results 
+	 * @param results
 	 * @param filename
 	 *            name wo zu speichern
 	 * @throws IOException
 	 */
-	public void createCVTableData(ArrayList<DataSet> ds_set, ArrayList<CVResult> results, String filename)
-			throws IOException {
+	public void createCVTableData(ArrayList<DataSet> ds_set,
+			ArrayList<CVResult> results, String filename) throws IOException {
 		try {
 			// Create file
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
@@ -642,18 +705,17 @@ public class CreateSummary {
 	 *            name wo zu speichern
 	 * @throws IOException
 	 */
-	public void createTableData(DataSet ds, String filename,boolean append)
-			throws IOException {
+	public void createTableData(DataSet ds, String filename, boolean append,
+			int shuffleiteration, int iteration) throws IOException {
 		try {
 			// Create file
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename,append));
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename,
+					append));
 			int count = 1;
-			DecimalFormat df = new DecimalFormat("##.###");
+			DecimalFormat df = new DecimalFormat("##.###", new DecimalFormatSymbols(Locale.ENGLISH));
 			ArrayList<Data> daten = ds.getDataPackage();
-			out.write("n\tvalues\ttype\n");
-
 			for (Data data : daten) {
-				
+
 				double q3 = data.getResult().q3;
 				double qh = data.getResult().qh;
 				double qe = data.getResult().qe;
@@ -662,22 +724,65 @@ public class CreateSummary {
 				double sovh = data.getResult().sov_h;
 				double sove = data.getResult().sov_e;
 				double sovc = data.getResult().sov_c;
-				
-				out.write(count+"\t"+(!Double.isNaN(q3) ? df.format(q3) : "NaN")+"\ta\tq\n");
-				out.write(count+"\t"+(!Double.isNaN(qh) ? df.format(qh) : "NaN")+"\th\tq\n");
-				out.write(count+"\t"+(!Double.isNaN(qe) ? df.format(qe) : "NaN")+"\te\tq\n");
-				out.write(count+"\t"+(!Double.isNaN(qc) ? df.format(qc) : "NaN")+"\tc\tq\n");
-				out.write(count+"\t"+(!Double.isNaN(sov) ? df.format(sov) : "NaN")+"\ta\tsov\n");
-				out.write(count+"\t"+(!Double.isNaN(sovh) ? df.format(sovh) : "NaN")+"\th\tsov\n");
-				out.write(count+"\t"+(!Double.isNaN(sove) ? df.format(sove) : "NaN")+"\te\tsov\n");
-				out.write(count+"\t"+(!Double.isNaN(sovc) ? df.format(sovc) : "NaN")+"\tc\tsov\n");
+
+				out.write(count + "\t"
+						+ (!Double.isNaN(q3) ? df.format(q3) : "NaN")
+						+ "\ta\tq\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(qh) ? df.format(qh) : "NaN")
+						+ "\th\tq\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(qe) ? df.format(qe) : "NaN")
+						+ "\te\tq\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(qc) ? df.format(qc) : "NaN")
+						+ "\tc\tq\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(sov) ? df.format(sov) : "NaN")
+						+ "\ta\tsov\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(sovh) ? df.format(sovh) : "NaN")
+						+ "\th\tsov\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(sove) ? df.format(sove) : "NaN")
+						+ "\te\tsov\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
+				out.write(count + "\t"
+						+ (!Double.isNaN(sovc) ? df.format(sovc) : "NaN")
+						+ "\tc\tsov\t" + shuffleiteration + "\t" + iteration
+						+ "\n");
 				count++;
 			}
-			
+
 			// Close the output stream
 			out.close();
 		} catch (Exception e) {// Catch exception if any
 			System.err.println("Error: ");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Bereitet File für GnuOutput vor
+	 * 
+	 * @param filename
+	 *            name wo zu speichern
+	 * @throws IOException
+	 */
+	public void prepareTableDataFile(String filename) throws IOException {
+		try {
+			// Create file
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+			out.write("n\tvalues\ttype\tvalmet\tsh_n\ti_n\n");
+			// Close the output stream
+			out.close();
+		} catch (Exception e) {// Catch exception if any
 			e.printStackTrace();
 		}
 	}

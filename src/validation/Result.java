@@ -1,6 +1,5 @@
 package validation;
 
-
 public class Result {
 	// parameters to calculate:
 	public double q3 = -1;
@@ -24,8 +23,9 @@ public class Result {
 		this.q3 = q3;
 		this.sov = sov;
 	}
-	
-	public Result(double q3, double sov, double qh, double qe, double qc, double sovh, double sove, double sovc) {
+
+	public Result(double q3, double sov, double qh, double qe, double qc,
+			double sovh, double sove, double sovc) {
 		this.q3 = q3;
 		this.qh = qh;
 		this.qe = qe;
@@ -35,9 +35,9 @@ public class Result {
 		this.sov_e = sove;
 		this.sov_c = sovc;
 	}
-	
+
 	@Override
 	public String toString() {
-		return q3+" "+sov+"\n";
+		return q3 + " " + sov + "\n";
 	}
 }
