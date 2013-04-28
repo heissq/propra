@@ -767,7 +767,7 @@ public class CreateSummary {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Bereitet File für GnuOutput vor
 	 * 

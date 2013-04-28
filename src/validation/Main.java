@@ -152,7 +152,7 @@ public class Main {
 				csum.createSummaryFileTxt(dataset, summary_file);
 			}
 			if (is_gnuplot)
-				csum.createTableData(dataset, gnuoutput, false, 1, 1);
+				csum.createTableData(dataset, gnuoutput, false, 0, 0);
 		} else {
 			// Cross validation
 			/**
