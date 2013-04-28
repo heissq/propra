@@ -104,8 +104,6 @@ public class Main {
 		if (cmd.hasOption("n-shuffles")) {
 			shuffles = Integer.parseInt(cmd
 					.getOptionValue("n-shuffles"));
-			is_gnuplot = true;
-			System.out.println("GnuPlot Output = " + gnuoutput);
 		}
 		
 		// GOR3MODEL JA NEIN...
